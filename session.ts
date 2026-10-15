@@ -1,26 +1,35 @@
-const { isPlainObject, merge, get, set, isObject, omit, uniq, difference, isArray, intersection } = require('lodash')
-const SessionInterface = require('@ostro/contracts/session/session')
-const uid = require('uid-safe').sync
-const kAttributes = Symbol('attributes')
-const kStore = Symbol('store')
-const kSessionId = Symbol('sessionid')
-const kResponse = Symbol('response')
-const kHandler = Symbol('handler')
+import type { ISession } from '@ostro/contracts/session/session';
+
+const { isPlainObject, merge, get, set, isObject, omit, uniq, difference, isArray, intersection } = require('lodash');
+const SessionInterface = require('@ostro/contracts/session/session');
+const uid = require('uid-safe').sync;
+const kAttributes = Symbol('attributes');
+const kStore = Symbol('store');
+const kSessionId = Symbol('sessionid');
+const kResponse = Symbol('response');
+const kHandler = Symbol('handler');
 
 /**
  * Class Session.
  */
-class Session extends SessionInterface {
+class Session extends SessionInterface implements ISession {
+    [kSessionId]: string;
+    [kHandler]: any;
+    [kAttributes]: Record<string, any>;
+    [kResponse]: any;
+    existed: boolean;
+    touched: boolean;
+
     /**
      * Create a new instance.
      * @param {*} handler
      * @param {*} __attributes
-     * @param {*} sessionId
+     * @param {string} sessionId
      * @param {*} response
      */
-    constructor(handler: Function, __attributes: any, sessionId: any, response: any) {
-        super()
-        this[kSessionId] = sessionId
+    constructor(handler: any, __attributes: any, sessionId: any, response: any) {
+        super();
+        this[kSessionId] = sessionId;
         Object.defineProperties(this, {
             [kHandler]: {
                 value: handler
