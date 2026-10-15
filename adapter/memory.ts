@@ -1,5 +1,14 @@
 var storage = Object.create(null)
+/**
+ * Class Memory.
+ */
 class Memory {
+    /**
+     * read method.
+     * @param {*} sid
+     * @param {*} cb
+     * @returns {any}
+     */
     read(sid, cb) {
 
         if (storage[sid]) {
@@ -9,6 +18,13 @@ class Memory {
         }
     }
 
+    /**
+     * write method.
+     * @param {*} sid
+     * @param {*} data
+     * @param {*} cb
+     * @returns {any}
+     */
     write(sid, data, cb) {
         storage[sid] = {
             updated_at: Date.now(),
@@ -17,6 +33,12 @@ class Memory {
         cb(null)
     }
 
+    /**
+     * destroy method.
+     * @param {*} sid
+     * @param {*} cb
+     * @returns {any}
+     */
     destroy(sid, cb) {
         if (storage[sid]) {
             delete storage[sid];
@@ -24,6 +46,11 @@ class Memory {
         cb(null)
     }
 
+    /**
+     * destroyExpireSession method.
+     * @param {*} maxAge
+     * @returns {any}
+     */
     destroyExpireSession(maxAge) {
         Object.keys(storage).map(sid => {
             if (storage[sid].updated_at < (Date.now() - (maxAge*60000))) {

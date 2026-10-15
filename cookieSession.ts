@@ -10,13 +10,29 @@ const kStore = Symbol('store')
 const kGetSessionId = Symbol('getSessionId')
 const kCookie = Symbol('cookie')
 const Cookie = require('@ostro/cookie/cookie')
+/**
+ * Class CookieSession.
+ */
 class CookieSession {
+    /**
+     * Create a new instance.
+     * @param {*} $app
+     * @param {*} $config
+     * @param {*} $store
+     */
     constructor($app, $config, $store) {
         this[kStore] = $store;
         this[kConfig] = $config;
         this[kCookie] = new Jar($app, $config);
     }
 
+    /**
+     * start method.
+     * @param {*} request
+     * @param {*} response
+     * @param {*} next
+     * @returns {any}
+     */
     start(request, response, next) {
         let headerCookies = request.headers.cookie
         let cookies = null
@@ -51,6 +67,10 @@ class CookieSession {
         }, response.request.secure()));
     }
 
+    /**
+     * structureobject method.
+     * @returns {any}
+     */
     structureobject() {
         return {
             __token: tokens.create(this[kConfig]['key']),
@@ -61,10 +81,23 @@ class CookieSession {
         }
     }
 
+    /**
+     * write method.
+     * @param {*} sessionId
+     * @param {*} __attributes
+     * @param {*} cb
+     * @returns {any}
+     */
     write(sessionId, __attributes, cb) {
         this[kStore].write(sessionId, __attributes, cb)
     }
 
+    /**
+     * destroy method.
+     * @param {*} sessionId
+     * @param {*} cb
+     * @returns {any}
+     */
     destroy(sessionId, cb) {
         this[kStore].destroy(sessionId, cb)
     }

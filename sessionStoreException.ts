@@ -1,4 +1,11 @@
+/**
+ * Class SessionStoreException.
+ */
 class SessionStoreException{
+    /**
+     * Create a new instance.
+     * @param {*} err
+     */
     constructor(err) {
         this.name = this.constructor.name;
         this.message =  'Unable to store session';

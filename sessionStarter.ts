@@ -6,13 +6,29 @@ const kConfig = Symbol('config')
 const kCloseSession = Symbol('closeSession')
 const { random } = require('lodash')
 
+/**
+ * Class SessionStarter.
+ */
 class SessionStarter {
+    /**
+     * Create a new instance.
+     * @param {*} config
+     * @param {*} handler
+     * @param {*} store
+     */
     constructor(config, handler, store) {
         this[kConfig] = config;
         this[kHandler] = handler;
         this[kStore] = store;
     }
 
+    /**
+     * start method.
+     * @param {*} request
+     * @param {*} response
+     * @param {*} next
+     * @returns {any}
+     */
     start(request, response, next) {
         let end = response.end
         let ended = false;
@@ -50,6 +66,10 @@ class SessionStarter {
 
     }
 
+    /**
+     * collectGarbage method.
+     * @returns {any}
+     */
     collectGarbage() {
 
         if (this.configHitsLottery()) {
@@ -58,6 +78,10 @@ class SessionStarter {
         }
     }
 
+    /**
+     * configHitsLottery method.
+     * @returns {any}
+     */
     configHitsLottery() {
         return (random(1, this[kConfig]['lottery'][1]) <= this[kConfig]['lottery'][0]);
     }

@@ -1,4 +1,11 @@
+/**
+ * Class InvalidCookieClassException.
+ */
 class InvalidCookieClassException {
+    /**
+     * Create a new instance.
+     * @param {*} message
+     */
     constructor(message) {
         this.name = this.constructor.name;
         this.message = message;

@@ -1,4 +1,10 @@
+/**
+ * Class startSession.
+ */
 class startSession {
+    /**
+     * Create a new instance.
+     */
     constructor() {
         this.$session = this.$app['session'];
         if (this.$session instanceof require('../sessionManager')) {
@@ -7,6 +13,13 @@ class startSession {
         }
     }
 
+    /**
+     * handle method.
+     * @param {*} { request
+     * @param {*} response
+     * @param {*} next }
+     * @returns {any}
+     */
     handle({ request, response, next }) {
         if (!this.$registered) {
             return next()

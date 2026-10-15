@@ -1,7 +1,14 @@
 const fs = require('fs-extra')
 const path = require('path')
 const kPath = Symbol('path')
+/**
+ * Class File.
+ */
 class File {
+    /**
+     * Create a new instance.
+     * @param {*} path
+     */
     constructor(path) {
         this[kPath] = path;
         fs.mkdirSync(this[kPath], {
@@ -9,14 +16,33 @@ class File {
         })
     }
 
+    /**
+     * read method.
+     * @param {*} sid
+     * @param {*} cb
+     * @returns {any}
+     */
     read(sid, cb) {
         fs.readJson(path.join(this[kPath], sid), cb)
     }
 
+    /**
+     * write method.
+     * @param {*} sid
+     * @param {*} data
+     * @param {*} cb
+     * @returns {any}
+     */
     write(sid, data, cb) {
         fs.writeJson(path.join(this[kPath], sid), data, cb)
     }
 
+    /**
+     * destroy method.
+     * @param {*} sid
+     * @param {*} cb
+     * @returns {any}
+     */
     destroy(sid, cb) {
         fs.unlink(path.join(this[kPath], sid), function(err) {
             if (typeof cb == 'function') {
@@ -25,6 +51,11 @@ class File {
         })
     }
 
+    /**
+     * destroyExpireSession method.
+     * @param {*} maxAge
+     * @returns {any}
+     */
     destroyExpireSession(maxAge) {
         var self = this;
         fs.readdir(this[kPath], (err, files) => {

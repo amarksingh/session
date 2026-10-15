@@ -1,5 +1,8 @@
 const Command = require('@ostro/console/command')
 
+/**
+ * Class SessionTableCommand.
+ */
 class SessionTableCommand extends Command {
 
     $signature = 'session:table';
@@ -8,12 +11,21 @@ class SessionTableCommand extends Command {
 
     $files;
 
+    /**
+     * Create a new instance.
+     * @param {*} $files
+     */
     constructor($files) {
         super()
 
         this.$files = $files;
     }
 
+    /**
+     * handle method.
+     * @async
+     * @returns {any}
+     */
     async handle() {
         let $fullPath = await this.createBaseMigration();
         await this.$files.put($fullPath, await this.$files.get(__dirname + '/stubs/database.stub'));
@@ -22,6 +34,10 @@ class SessionTableCommand extends Command {
 
     }
 
+    /**
+     * createBaseMigration method.
+     * @returns {any}
+     */
     createBaseMigration() {
         let $name = 'create_sessions_table';
 

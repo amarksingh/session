@@ -5,14 +5,25 @@ const CookieSession = require('./cookieSession')
 const SessionStore = require('./sessionStore')
 const Manager = require('@ostro/support/manager')
 
+/**
+ * Class SessionManager.
+ */
 class SessionManager  extends Manager {
 
     $type = 'session';
 
+    /**
+     * getSessionConfig method.
+     * @returns {any}
+     */
     getSessionConfig() {
         return this.$config[this.$type]
     }
 
+    /**
+     * config method.
+     * @returns {any}
+     */
     config() {
         let sessionConfig = this.getSessionConfig()
         return {
@@ -21,16 +32,30 @@ class SessionManager  extends Manager {
         }
     }
 
+    /**
+     * start method.
+     * @returns {any}
+     */
     start() {
         return this.startSession(new SessionStarter(this.config(), new CookieSession(this.$container, this.config(), this.driver()), this.driver()))
     }
     
+    /**
+     * startSession method.
+     * @param {*} session
+     * @returns {any}
+     */
     startSession(session) {
         return (request, response, next) => {
             session.start(request, response, next)
         }
     }
 
+    /**
+     * resolve method.
+     * @param {*} name
+     * @returns {any}
+     */
     resolve(name) {
         var config = this.getSessionConfig();
         if ((this.$customCreators[this.getDriverName()])) {
@@ -45,35 +70,75 @@ class SessionManager  extends Manager {
         }
     }
 
+    /**
+     * callCustomCreator method.
+     * @param {*} $config
+     * @param {*} name
+     * @returns {any}
+     */
     callCustomCreator($config, name) {
         var driver = this.$customCreators[this.getDriverName()](this.$constraints, name, $config);
         return this.adapt(driver);
     }
 
+    /**
+     * createMemoryDriver method.
+     * @param {*} $config
+     * @returns {any}
+     */
     createMemoryDriver($config) {
         return this.adapt((new(require('./adapter/memory'))($config['files'])));
     }
 
+    /**
+     * createFileDriver method.
+     * @param {*} $config
+     * @returns {any}
+     */
     createFileDriver($config) {
         return this.adapt((new(require('./adapter/file'))($config['files'])))
     }
 
+    /**
+     * createDatabaseDriver method.
+     * @param {*} $config
+     * @returns {any}
+     */
     createDatabaseDriver($config) {
         return this.adapt((new(require('./adapter/database'))(this.$container.db, $config['table'])))
     }
 
+    /**
+     * createCacheDriver method.
+     * @param {*} $config
+     * @param {*} driver
+     * @returns {any}
+     */
     createCacheDriver($config, driver) {
         return this.adapt((new(require('./adapter/cache'))(this.$container.cache.driver(driver[1]), $config)))
     }
 
+    /**
+     * adapt method.
+     * @param {*} session
+     * @returns {any}
+     */
     adapt(session) {
         return new SessionStore(session);
     }
 
+    /**
+     * getDriverName method.
+     * @returns {any}
+     */
     getDriverName() {
         return super.getConfig('driver');
     }
 
+    /**
+     * getDefaultDriver method.
+     * @returns {any}
+     */
     getDefaultDriver() {
         return this.getDriverName();
     }
