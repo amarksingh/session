@@ -31,7 +31,7 @@
   ],
   "author": "amar",
   "license": "MIT",
-  "main": "sessionManager.js",
+  "main": "sessionManager.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ostrojs/session.git"
