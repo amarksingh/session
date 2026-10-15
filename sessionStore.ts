@@ -7,7 +7,7 @@ class SessionStore {
      * Create a new instance.
      * @param {*} $store
      */
-    constructor($store) {
+    constructor($store: any) {
         this[kStore] = $store
     }
     /**
@@ -16,7 +16,7 @@ class SessionStore {
      * @param {*} cb
      * @returns {any}
      */
-    read(sid = '', cb) {
+    read(sid: string = '', cb: any) {
         this[kStore].read(sid, cb)
     }
     /**
@@ -26,7 +26,7 @@ class SessionStore {
      * @param {*} cb
      * @returns {any}
      */
-    write(sid = '', data, cb) {
+    write(sid: string = '', data: Record<string, any>, cb: any) {
         this[kStore].write(sid, data, cb)
 
     }
@@ -36,7 +36,7 @@ class SessionStore {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sid = '', cb) {
+    destroy(sid: string = '', cb: any) {
         this[kStore].destroy(sid, cb)
 
     }
@@ -45,7 +45,7 @@ class SessionStore {
      * @param {*} maxAge
      * @returns {any}
      */
-    destroyExpireSession(maxAge) {
+    destroyExpireSession(maxAge: any) {
         this[kStore].destroyExpireSession(maxAge)
 
     };

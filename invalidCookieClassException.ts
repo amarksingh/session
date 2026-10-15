@@ -6,7 +6,7 @@ class InvalidCookieClassException {
      * Create a new instance.
      * @param {*} message
      */
-    constructor(message) {
+    constructor(message: string) {
         this.name = this.constructor.name;
         this.message = message;
         this.statusCode = 500;

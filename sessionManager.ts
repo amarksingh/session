@@ -45,7 +45,7 @@ class SessionManager  extends Manager {
      * @param {*} session
      * @returns {any}
      */
-    startSession(session) {
+    startSession(session: any) {
         return (request, response, next) => {
             session.start(request, response, next)
         }
@@ -56,7 +56,7 @@ class SessionManager  extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    resolve(name) {
+    resolve(name: string) {
         var config = this.getSessionConfig();
         if ((this.$customCreators[this.getDriverName()])) {
             return this.callCustomCreator(config, name);
@@ -76,7 +76,7 @@ class SessionManager  extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    callCustomCreator($config, name) {
+    callCustomCreator($config: Record<string, any>, name: string) {
         var driver = this.$customCreators[this.getDriverName()](this.$constraints, name, $config);
         return this.adapt(driver);
     }
@@ -86,7 +86,7 @@ class SessionManager  extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createMemoryDriver($config) {
+    createMemoryDriver($config: Record<string, any>) {
         return this.adapt((new(require('./adapter/memory'))($config['files'])));
     }
 
@@ -95,7 +95,7 @@ class SessionManager  extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createFileDriver($config) {
+    createFileDriver($config: Record<string, any>) {
         return this.adapt((new(require('./adapter/file'))($config['files'])))
     }
 
@@ -104,7 +104,7 @@ class SessionManager  extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createDatabaseDriver($config) {
+    createDatabaseDriver($config: Record<string, any>) {
         return this.adapt((new(require('./adapter/database'))(this.$container.db, $config['table'])))
     }
 
@@ -114,7 +114,7 @@ class SessionManager  extends Manager {
      * @param {*} driver
      * @returns {any}
      */
-    createCacheDriver($config, driver) {
+    createCacheDriver($config: Record<string, any>, driver: any) {
         return this.adapt((new(require('./adapter/cache'))(this.$container.cache.driver(driver[1]), $config)))
     }
 
@@ -123,7 +123,7 @@ class SessionManager  extends Manager {
      * @param {*} session
      * @returns {any}
      */
-    adapt(session) {
+    adapt(session: any) {
         return new SessionStore(session);
     }
 

@@ -9,7 +9,7 @@ class File {
      * Create a new instance.
      * @param {*} path
      */
-    constructor(path) {
+    constructor(path: string) {
         this[kPath] = path;
         fs.mkdirSync(this[kPath], {
             recursive: true
@@ -22,7 +22,7 @@ class File {
      * @param {*} cb
      * @returns {any}
      */
-    read(sid, cb) {
+    read(sid: any, cb: any) {
         fs.readJson(path.join(this[kPath], sid), cb)
     }
 
@@ -33,7 +33,7 @@ class File {
      * @param {*} cb
      * @returns {any}
      */
-    write(sid, data, cb) {
+    write(sid: any, data: Record<string, any>, cb: any) {
         fs.writeJson(path.join(this[kPath], sid), data, cb)
     }
 
@@ -43,7 +43,7 @@ class File {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sid, cb) {
+    destroy(sid: any, cb: any) {
         fs.unlink(path.join(this[kPath], sid), function(err) {
             if (typeof cb == 'function') {
                 cb(err)
@@ -56,7 +56,7 @@ class File {
      * @param {*} maxAge
      * @returns {any}
      */
-    destroyExpireSession(maxAge) {
+    destroyExpireSession(maxAge: any) {
         var self = this;
         fs.readdir(this[kPath], (err, files) => {
             if (err || files.length === 0) {

@@ -6,7 +6,7 @@ class SessionStoreException{
      * Create a new instance.
      * @param {*} err
      */
-    constructor(err) {
+    constructor(err: any) {
         this.name = this.constructor.name;
         this.message =  'Unable to store session';
         this.errors =  err;

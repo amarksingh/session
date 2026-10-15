@@ -20,7 +20,7 @@ class CookieSession {
      * @param {*} $config
      * @param {*} $store
      */
-    constructor($app, $config, $store) {
+    constructor($app: any, $config: Record<string, any>, $store: any) {
         this[kStore] = $store;
         this[kConfig] = $config;
         this[kCookie] = new Jar($app, $config);
@@ -33,7 +33,7 @@ class CookieSession {
      * @param {*} next
      * @returns {any}
      */
-    start(request, response, next) {
+    start(request: any, response: any, next: Function) {
         let headerCookies = request.headers.cookie
         let cookies = null
         if (request.cookie instanceof Cookie) {
@@ -88,7 +88,7 @@ class CookieSession {
      * @param {*} cb
      * @returns {any}
      */
-    write(sessionId, __attributes, cb) {
+    write(sessionId: any, __attributes: any, cb: any) {
         this[kStore].write(sessionId, __attributes, cb)
     }
 
@@ -98,7 +98,7 @@ class CookieSession {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sessionId, cb) {
+    destroy(sessionId: any, cb: any) {
         this[kStore].destroy(sessionId, cb)
     }
 

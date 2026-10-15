@@ -18,7 +18,7 @@ class Session extends SessionInterface {
      * @param {*} sessionId
      * @param {*} response
      */
-    constructor(handler, __attributes, sessionId, response) {
+    constructor(handler: Function, __attributes: any, sessionId: any, response: any) {
         super()
         this[kSessionId] = sessionId
         Object.defineProperties(this, {
@@ -67,7 +67,7 @@ class Session extends SessionInterface {
      * @param {*} callback
      * @returns {any}
      */
-    save(callback) {
+    save(callback: Function) {
 
         this.get('__flash.__old', []).forEach((old) => {
             this.forget(old);
@@ -86,7 +86,7 @@ class Session extends SessionInterface {
      * @param {*} defaultValue
      * @returns {any}
      */
-    pull(key, defaultValue) {
+    pull(key: string, defaultValue: any) {
         if (this[kAttributes][key]) {
             defaultValue = this[kAttributes][key];
             delete this[kAttributes][key]
@@ -108,7 +108,7 @@ class Session extends SessionInterface {
      * @param {*} $key
      * @returns {any}
      */
-    remove($key) {
+    remove($key: string) {
         this.pull($key)
     }
 
@@ -118,7 +118,7 @@ class Session extends SessionInterface {
      * @param {*} value
      * @returns {any}
      */
-    push(key, value) {
+    push(key: string, value: any) {
         var array = this.get(key, []);
         if (isArray(array)) {
             array.push(value);
@@ -133,7 +133,7 @@ class Session extends SessionInterface {
      * @param {*} defaultValue
      * @returns {any}
      */
-    merge(key, value, defaultValue = {}) {
+    merge(key: string, value: any, defaultValue: Record<string, any> = {}) {
         var data = this.get(key, defaultValue);
         if (isArray(data)) {
             this.put(key, data.concat(value));
@@ -148,7 +148,7 @@ class Session extends SessionInterface {
      * @param {*} cb
      * @returns {any}
      */
-    regenerate(destroy, cb) {
+    regenerate(destroy: any, cb: any) {
         if (destroy) {
             this[kHandler].destroy(this[kSessionId], cb)
         }
@@ -161,7 +161,7 @@ class Session extends SessionInterface {
      * @param {*} key
      * @returns {any}
      */
-    has(key) {
+    has(key: string) {
         return get(this[kAttributes], key) != undefined;
     }
 
@@ -170,7 +170,7 @@ class Session extends SessionInterface {
      * @param {*} key
      * @returns {any}
      */
-    forget(key) {
+    forget(key: string) {
         this.touched = true
         delete this[kAttributes][key];
     }
@@ -181,7 +181,7 @@ class Session extends SessionInterface {
      * @param {*} defaultValue
      * @returns {any}
      */
-    get(key, defaultValue) {
+    get(key: string, defaultValue: any) {
         return get(this[kAttributes], key) || defaultValue || null;
     }
 
@@ -199,7 +199,7 @@ class Session extends SessionInterface {
      * @param {*} value
      * @returns {any}
      */
-    put(key, value) {
+    put(key: string, value: any) {
         if (!isObject(key)) {
             key = {
                 [key]: value
@@ -220,7 +220,7 @@ class Session extends SessionInterface {
      * @param {*} value
      * @returns {any}
      */
-    flash(key, value) {
+    flash(key: string, value: any) {
         if (!isObject(key)) {
             key = {
                 [key]: value
@@ -236,7 +236,7 @@ class Session extends SessionInterface {
      * @param {*} keys
      * @returns {any}
      */
-    flashOnly(keys) {
+    flashOnly(keys: any) {
         keys = Array.isArray(keys) ? keys : arguments;
         let onlyKeys = intersection(this.get('__flash.__new', []), keys)
         let exceptKeys = difference(this.get('__flash.__new', []), keys)
@@ -252,7 +252,7 @@ class Session extends SessionInterface {
      * @param {*} keys
      * @returns {any}
      */
-    flashExcept(keys) {
+    flashExcept(keys: any) {
         keys = Array.isArray(keys) ? keys : arguments;
         let exceptKeys = intersection(this.get('__flash.__new', []), keys)
         let onlyKeys = difference(this.get('__flash.__new', []), keys)
@@ -277,7 +277,7 @@ class Session extends SessionInterface {
      * @param {*} keys
      * @returns {any}
      */
-    keep(keys) {
+    keep(keys: any) {
         keys = isArray(keys) ? keys : Array.prototype.slice.call(arguments);
         this.put('__flash.__new', uniq(this.get('__flash.__new', []).concat(keys)));
         this.put('__flash.__old', difference(this.get('__flash.__old', []), keys));

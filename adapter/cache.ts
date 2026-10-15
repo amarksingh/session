@@ -11,7 +11,7 @@ class Cache {
      * @param {*} connection
      * @param {*} $config
      */
-    constructor(connection, $config) {
+    constructor(connection: any, $config: Record<string, any>) {
         this[kConnection] = connection;
         let driverOptions = $config.stores[$config['driver'].split('.')[0]];
         this[kMaxAge] = typeof driverOptions == 'object' ? driverOptions.checkPeriod : undefined;
@@ -23,7 +23,7 @@ class Cache {
      * @param {*} cb
      * @returns {any}
      */
-    read(sid, cb) {
+    read(sid: any, cb: any) {
         this[kConnection].get('session.' + sid).then(res => {
             cb(null, JSON.parse(res))
         }).catch(err => {
@@ -37,7 +37,7 @@ class Cache {
      * @param {*} cb
      * @returns {any}
      */
-    write(sid, data, cb) {
+    write(sid: any, data: Record<string, any>, cb: any) {
         this[kConnection].put('session.' + sid, JSON.stringify(data), this[kMaxAge]).then(res => {
             cb(null, res)
         }).catch(function(err) {
@@ -50,7 +50,7 @@ class Cache {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sid, cb) {
+    destroy(sid: any, cb: any) {
         this[kConnection].forget('session.' + sid).then(res => {
             cb(null, true)
         }).catch(err => {

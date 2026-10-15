@@ -9,7 +9,7 @@ class Memory {
      * @param {*} cb
      * @returns {any}
      */
-    read(sid, cb) {
+    read(sid: any, cb: any) {
 
         if (storage[sid]) {
             cb(null, storage[sid].data)
@@ -25,7 +25,7 @@ class Memory {
      * @param {*} cb
      * @returns {any}
      */
-    write(sid, data, cb) {
+    write(sid: any, data: Record<string, any>, cb: any) {
         storage[sid] = {
             updated_at: Date.now(),
             data: data
@@ -39,7 +39,7 @@ class Memory {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sid, cb) {
+    destroy(sid: any, cb: any) {
         if (storage[sid]) {
             delete storage[sid];
         }
@@ -51,7 +51,7 @@ class Memory {
      * @param {*} maxAge
      * @returns {any}
      */
-    destroyExpireSession(maxAge) {
+    destroyExpireSession(maxAge: any) {
         Object.keys(storage).map(sid => {
             if (storage[sid].updated_at < (Date.now() - (maxAge*60000))) {
                 delete storage[sid];

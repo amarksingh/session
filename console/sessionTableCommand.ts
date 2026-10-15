@@ -15,7 +15,7 @@ class SessionTableCommand extends Command {
      * Create a new instance.
      * @param {*} $files
      */
-    constructor($files) {
+    constructor($files: any) {
         super()
 
         this.$files = $files;

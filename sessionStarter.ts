@@ -16,7 +16,7 @@ class SessionStarter {
      * @param {*} handler
      * @param {*} store
      */
-    constructor(config, handler, store) {
+    constructor(config: Record<string, any>, handler: Function, store: any) {
         this[kConfig] = config;
         this[kHandler] = handler;
         this[kStore] = store;
@@ -29,7 +29,7 @@ class SessionStarter {
      * @param {*} next
      * @returns {any}
      */
-    start(request, response, next) {
+    start(request: any, response: any, next: Function) {
         let end = response.end
         let ended = false;
         onHeaders(response, () => {

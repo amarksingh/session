@@ -12,7 +12,7 @@ class Database {
      * @param {*} connection
      * @param {*} table
      */
-    constructor(connection, table) {
+    constructor(connection: any, table: string) {
         this[kConnection] = connection;
         this[kTable] = table;
     }
@@ -23,7 +23,7 @@ class Database {
      * @param {*} cb
      * @returns {any}
      */
-    read(sid, cb) {
+    read(sid: any, cb: any) {
         this[kConnection].table(this[kTable]).where({ sid }).value('payload').then(res => {
             cb(null, (res ? JSON.parse(res) : null))
         }).catch(err => {
@@ -38,7 +38,7 @@ class Database {
      * @param {*} cb
      * @returns {any}
      */
-    write(sid, data, cb) {
+    write(sid: any, data: Record<string, any>, cb: any) {
         this[kConnection].table(this[kTable]).updateOrInsert({ sid }, { payload: JSON.stringify(data) }).then(res => {
             cb(null, res)
         }).catch(function(err) {
@@ -52,7 +52,7 @@ class Database {
      * @param {*} cb
      * @returns {any}
      */
-    destroy(sid, cb) {
+    destroy(sid: any, cb: any) {
         this[kConnection].table(this[kTable]).where({ sid }).delete().then(res => {
             cb(null, true)
         }).catch(err => {
