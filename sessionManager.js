@@ -17,7 +17,7 @@ class SessionManager  extends Manager {
         let sessionConfig = this.getSessionConfig()
         return {
             ...sessionConfig,
-            key: this.$config['app']['key'] || 'a@jf#H&5@6*1jV(>df6d!fk8^6g56%tt+b4'
+            key: (this.$config['app'] && this.$config['app']['key']) || 'a@jf#H&5@6*1jV(>df6d!fk8^6g56%tt+b4'
         }
     }
 
@@ -38,7 +38,7 @@ class SessionManager  extends Manager {
         }
         var driverName = this.getDriverName().split('.')
         var driverMethod = 'create' + driverName[0].ucfirst() + 'Driver';
-        if (isset(this[driverMethod])) {
+        if (driverMethod in this) {
             return this[driverMethod](config, driverName);
         } else {
             throw new Error(`Driver [${this.getDriverName()}] is not supported.`);
@@ -47,7 +47,7 @@ class SessionManager  extends Manager {
 
     callCustomCreator($config, name) {
         var driver = this.$customCreators[this.getDriverName()](this.$constraints, name, $config);
-        return this.adapt($driver);
+        return this.adapt(driver);
     }
 
     createMemoryDriver($config) {

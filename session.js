@@ -165,14 +165,14 @@ class Session extends SessionInterface {
     }
 
     reflash() {
-        this.put('__flash.__new', uniq((this.get('__flash.__new', [])).concat(this.get('__flash.__old', []))));;
+        this.put('__flash.__new', uniq((this.get('__flash.__new', [])).concat(this.get('__flash.__old', []))));
         this.put('__flash.__old', []);
     }
 
     keep(keys) {
         keys = isArray(keys) ? keys : Array.prototype.slice.call(arguments);
-        this.put('__flash.__new', uniq(this.get('__flash.__new', []))).concat(keys);
-        this.put('__flash.__old', difference(this.get('__flash.__old', []), key));
+        this.put('__flash.__new', uniq(this.get('__flash.__new', []).concat(keys)));
+        this.put('__flash.__old', difference(this.get('__flash.__old', []), keys));
     }
 
     token() {

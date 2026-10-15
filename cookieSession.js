@@ -28,7 +28,7 @@ class CookieSession {
         if (cookies) {
             cookies = this[kCookie].getSignedCookies(cookies, this[kConfig]['key'])
         }
-        let sid = this[kGetSessionId](cookies[this[kConfig]['cookie']])
+        let sid = this[kGetSessionId]((cookies || {})[this[kConfig]['cookie']])
         this[kStore].read(sid, (err, data) => {
             Object.defineProperty(request, 'session', {
                 value: new session(this, data, sid, response),

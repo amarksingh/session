@@ -3,17 +3,21 @@
   "version": "1.0.10",
   "description": "Session module for OstroJS",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx c8 npx jest"
   },
   "dependencies": {
-    "@ostro/support": "^1.0.2",
+    "@ostro/console": "^1.0.7",
     "@ostro/contracts": "^1.0.0",
     "@ostro/cookie": "^1.0.2",
+    "@ostro/support": "^1.0.2",
     "cookie": "^0.4.0",
     "cookie-signature": "^1.1.0",
+    "csrf": "^3.1.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
+    "lodash.get": "^4.4.2",
     "on-headers": "^1.0.2",
+    "proxy-addr": "^2.0.8",
     "uid-safe": "^2.1.5"
   },
   "engines": {
