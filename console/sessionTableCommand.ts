@@ -4,10 +4,14 @@ import Command from '@ostro/console/command';
  * Class SessionTableCommand.
  */
 class SessionTableCommand extends Command {
-    $signature: string = 'session:table';
-    $description: string = 'Create a migration for the session database table';
+    get $signature(): string {
+        return 'session:table';
+    }
+    get $description(): string {
+        return 'Create a migration for the session database table';
+    }
     $files: any;
-    $app: any;
+    declare $app: any;
     info: any;
 
     /**
