@@ -1,4 +1,5 @@
-const Memory = require('../adapter/memory');
+const _Memory = require('../adapter/memory');
+const Memory = _Memory.default || _Memory;
 
 describe('adapter/memory', () => {
     let memory;

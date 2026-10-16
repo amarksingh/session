@@ -1,4 +1,5 @@
-const Session = require('../session');
+const _Session = require('../session');
+const Session = _Session.default || _Session;
 
 describe('Session', () => {
     let mockHandler;

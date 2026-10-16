@@ -1,5 +1,7 @@
-const InvalidCookieClassException = require('../invalidCookieClassException');
-const SessionStoreException = require('../sessionStoreException');
+const _InvalidCookieClassException = require('../invalidCookieClassException');
+const InvalidCookieClassException = _InvalidCookieClassException.default || _InvalidCookieClassException;
+const _SessionStoreException = require('../sessionStoreException');
+const SessionStoreException = _SessionStoreException.default || _SessionStoreException;
 
 describe('Session Exceptions', () => {
     test('InvalidCookieClassException creates error with message and status 500', () => {

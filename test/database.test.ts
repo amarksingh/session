@@ -1,4 +1,5 @@
-const DatabaseAdapter = require('../adapter/database');
+const _DatabaseAdapter = require('../adapter/database');
+const DatabaseAdapter = _DatabaseAdapter.default || _DatabaseAdapter;
 
 describe('adapter/database', () => {
     test('read queries table for sid and parses JSON or returns null', (done) => {

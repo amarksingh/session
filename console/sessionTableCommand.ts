@@ -41,4 +41,4 @@ class SessionTableCommand extends Command {
     }
 }
 
-export = SessionTableCommand;
+export default SessionTableCommand;

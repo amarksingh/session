@@ -1,5 +1,7 @@
-const SessionServiceProvider = require('../sessionServiceProvider');
-const SessionManager = require('../sessionManager');
+const _SessionServiceProvider = require('../sessionServiceProvider');
+const SessionServiceProvider = _SessionServiceProvider.default || _SessionServiceProvider;
+const _SessionManager = require('../sessionManager');
+const SessionManager = _SessionManager.default || _SessionManager;
 
 describe('SessionServiceProvider', () => {
     test('register binds session singleton', () => {

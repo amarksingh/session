@@ -49,4 +49,4 @@ const util: IUtil = {
     }
 };
 
-export = util;
+export default util;

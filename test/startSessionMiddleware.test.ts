@@ -1,5 +1,7 @@
-const StartSessionMiddleware = require('../middleware/startSession');
-const SessionManager = require('../sessionManager');
+const _StartSessionMiddleware = require('../middleware/startSession');
+const StartSessionMiddleware = _StartSessionMiddleware.default || _StartSessionMiddleware;
+const _SessionManager = require('../sessionManager');
+const SessionManager = _SessionManager.default || _SessionManager;
 
 describe('middleware/startSession', () => {
     test('when $app.session is an instance of SessionManager, initializes startSession and handles request', () => {

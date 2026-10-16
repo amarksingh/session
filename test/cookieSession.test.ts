@@ -1,6 +1,8 @@
-const CookieSession = require('../cookieSession');
+const _CookieSession = require('../cookieSession');
+const CookieSession = _CookieSession.default || _CookieSession;
 const Cookie = require('@ostro/cookie/cookie');
-const SessionStore = require('../sessionStore');
+const _SessionStore = require('../sessionStore');
+const SessionStore = _SessionStore.default || _SessionStore;
 
 describe('CookieSession', () => {
     let mockApp;

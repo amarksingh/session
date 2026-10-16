@@ -22,4 +22,4 @@ class SessionStoreException {
     }
 }
 
-export = SessionStoreException;
+export default SessionStoreException;

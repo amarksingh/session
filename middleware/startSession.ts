@@ -36,4 +36,4 @@ class startSession {
     }
 }
 
-export = startSession;
+export default startSession;

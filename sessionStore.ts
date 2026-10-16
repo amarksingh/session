@@ -56,4 +56,4 @@ class SessionStore {
     }
 }
 
-export = SessionStore;
+export default SessionStore;

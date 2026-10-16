@@ -1,5 +1,7 @@
-const SessionManager = require('../sessionManager');
-const SessionStore = require('../sessionStore');
+const _SessionManager = require('../sessionManager');
+const SessionManager = _SessionManager.default || _SessionManager;
+const _SessionStore = require('../sessionStore');
+const SessionStore = _SessionStore.default || _SessionStore;
 const path = require('path');
 const os = require('os');
 

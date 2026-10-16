@@ -1,4 +1,5 @@
-const SessionStore = require('../sessionStore');
+const _SessionStore = require('../sessionStore');
+const SessionStore = _SessionStore.default || _SessionStore;
 
 describe('SessionStore', () => {
     test('proxies read, write, destroy, destroyExpireSession with default sid', (done) => {

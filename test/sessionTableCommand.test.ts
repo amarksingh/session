@@ -1,5 +1,6 @@
 const path = require('path');
-const SessionTableCommand = require('../console/sessionTableCommand');
+const _SessionTableCommand = require('../console/sessionTableCommand');
+const SessionTableCommand = _SessionTableCommand.default || _SessionTableCommand;
 
 describe('console/sessionTableCommand', () => {
     test('instantiates and runs handle creating migration file from stub', async () => {

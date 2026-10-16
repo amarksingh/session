@@ -1,7 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
-const FileAdapter = require('../adapter/file');
+const _FileAdapter = require('../adapter/file');
+const FileAdapter = _FileAdapter.default || _FileAdapter;
 
 describe('adapter/file', () => {
     let tempDir;

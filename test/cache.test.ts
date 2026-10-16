@@ -1,4 +1,5 @@
-const CacheAdapter = require('../adapter/cache');
+const _CacheAdapter = require('../adapter/cache');
+const CacheAdapter = _CacheAdapter.default || _CacheAdapter;
 
 describe('adapter/cache', () => {
     test('initializes with checkPeriod from stores config or undefined', () => {

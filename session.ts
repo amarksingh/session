@@ -306,4 +306,4 @@ class Session extends SessionInterface implements ISession {
     }
 }
 
-export = Session;
+export default Session;

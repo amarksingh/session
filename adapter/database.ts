@@ -63,4 +63,4 @@ class Database {
     }
 }
 
-export = Database;
+export default Database;

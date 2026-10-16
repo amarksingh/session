@@ -1,4 +1,5 @@
-const util = require('../util');
+const _util = require('../util');
+const util = _util.default || _util;
 
 describe('util', () => {
     describe('defineMember', () => {

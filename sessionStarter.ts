@@ -100,4 +100,4 @@ class SessionStarter {
     }
 }
 
-export = SessionStarter;
+export default SessionStarter;

@@ -38,4 +38,4 @@ class SessionServiceProvider extends ServiceProvider {
     }
 }
 
-export = SessionServiceProvider;
+export default SessionServiceProvider;

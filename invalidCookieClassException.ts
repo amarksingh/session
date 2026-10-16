@@ -20,4 +20,4 @@ class InvalidCookieClassException {
     }
 }
 
-export = InvalidCookieClassException;
+export default InvalidCookieClassException;

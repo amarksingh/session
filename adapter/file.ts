@@ -82,4 +82,4 @@ class File {
     }
 }
 
-export = File;
+export default File;

@@ -125,4 +125,4 @@ class CookieSession {
     }
 }
 
-export = CookieSession;
+export default CookieSession;

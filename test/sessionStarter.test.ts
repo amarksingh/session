@@ -1,5 +1,7 @@
-const SessionStarter = require('../sessionStarter');
-const SessionStoreException = require('../sessionStoreException');
+const _SessionStarter = require('../sessionStarter');
+const SessionStarter = _SessionStarter.default || _SessionStarter;
+const _SessionStoreException = require('../sessionStoreException');
+const SessionStoreException = _SessionStoreException.default || _SessionStoreException;
 
 describe('SessionStarter', () => {
     let mockConfig;

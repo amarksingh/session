@@ -1,70 +1,74 @@
-require('@ostro/support/helpers')
-const SessionStarter = require('./sessionStarter')
-const InvalidCookieClassException = require('./invalidCookieClassException')
-const CookieSession = require('./cookieSession')
-const SessionStore = require('./sessionStore')
-const Manager = require('@ostro/support/manager')
+import '@ostro/support/helpers';
+import SessionStarter from './sessionStarter';
+import InvalidCookieClassException from './invalidCookieClassException';
+import CookieSession from './cookieSession';
+import SessionStore from './sessionStore';
+import Manager from '@ostro/support/manager';
+import MemoryAdapter from './adapter/memory';
+import FileAdapter from './adapter/file';
+import DatabaseAdapter from './adapter/database';
+import CacheAdapter from './adapter/cache';
 
 /**
  * Class SessionManager.
  */
-class SessionManager  extends Manager {
+class SessionManager extends Manager {
 
-    $type = 'session';
+    public $type: string = 'session';
 
     /**
      * getSessionConfig method.
      * @returns {any}
      */
-    getSessionConfig() {
-        return this.$config[this.$type]
+    public getSessionConfig(): any {
+        return this.$config[this.$type];
     }
 
     /**
      * config method.
      * @returns {any}
      */
-    config() {
-        let sessionConfig = this.getSessionConfig()
+    public config(): any {
+        const sessionConfig = this.getSessionConfig();
         return {
             ...sessionConfig,
             key: (this.$config['app'] && this.$config['app']['key']) || 'a@jf#H&5@6*1jV(>df6d!fk8^6g56%tt+b4'
-        }
+        };
     }
 
     /**
      * start method.
      * @returns {any}
      */
-    start() {
-        return this.startSession(new SessionStarter(this.config(), new CookieSession(this.$container, this.config(), this.driver()), this.driver()))
+    public start(): any {
+        return this.startSession(new SessionStarter(this.config(), new CookieSession(this.$container, this.config(), this.driver()), this.driver()));
     }
     
     /**
      * startSession method.
-     * @param {*} session
+     * @param session
      * @returns {any}
      */
-    startSession(session: any) {
-        return (request, response, next) => {
-            session.start(request, response, next)
-        }
+    public startSession(session: any): (request: any, response: any, next: (err?: any) => void) => void {
+        return (request: any, response: any, next: (err?: any) => void) => {
+            session.start(request, response, next);
+        };
     }
 
     /**
      * resolve method.
-     * @param {*} name
+     * @param name
      * @returns {any}
      */
-    resolve(name: string) {
-        var config = this.getSessionConfig();
-        if ((this.$customCreators[this.getDriverName()])) {
+    public resolve(name: string): any {
+        const config = this.getSessionConfig();
+        if (this.$customCreators[this.getDriverName()]) {
             return this.callCustomCreator(config, name);
         }
-        var driverName = this.getDriverName().split('.')
-        var driverMethod = 'create' + driverName[0].ucfirst() + 'Driver';
+        const driverName = this.getDriverName().split('.');
+        const driverMethod = 'create' + (driverName[0] as any).ucfirst() + 'Driver';
         if (driverMethod in this) {
-            return this[driverMethod](config, driverName);
+            return (this as any)[driverMethod](config, driverName);
         } else {
             throw new Error(`Driver [${this.getDriverName()}] is not supported.`);
         }
@@ -72,58 +76,58 @@ class SessionManager  extends Manager {
 
     /**
      * callCustomCreator method.
-     * @param {*} $config
-     * @param {*} name
+     * @param $config
+     * @param name
      * @returns {any}
      */
-    callCustomCreator($config: Record<string, any>, name: string) {
-        var driver = this.$customCreators[this.getDriverName()](this.$constraints, name, $config);
+    public callCustomCreator($config: Record<string, any>, name: string): any {
+        const driver = this.$customCreators[this.getDriverName()](this.$constraints, name, $config);
         return this.adapt(driver);
     }
 
     /**
      * createMemoryDriver method.
-     * @param {*} $config
+     * @param $config
      * @returns {any}
      */
-    createMemoryDriver($config: Record<string, any>) {
-        return this.adapt((new(require('./adapter/memory'))($config['files'])));
+    public createMemoryDriver($config: Record<string, any>): any {
+        return this.adapt(new MemoryAdapter($config['files']));
     }
 
     /**
      * createFileDriver method.
-     * @param {*} $config
+     * @param $config
      * @returns {any}
      */
-    createFileDriver($config: Record<string, any>) {
-        return this.adapt((new(require('./adapter/file'))($config['files'])))
+    public createFileDriver($config: Record<string, any>): any {
+        return this.adapt(new FileAdapter($config['files']));
     }
 
     /**
      * createDatabaseDriver method.
-     * @param {*} $config
+     * @param $config
      * @returns {any}
      */
-    createDatabaseDriver($config: Record<string, any>) {
-        return this.adapt((new(require('./adapter/database'))(this.$container.db, $config['table'])))
+    public createDatabaseDriver($config: Record<string, any>): any {
+        return this.adapt(new DatabaseAdapter(this.$container.db, $config['table']));
     }
 
     /**
      * createCacheDriver method.
-     * @param {*} $config
-     * @param {*} driver
+     * @param $config
+     * @param driver
      * @returns {any}
      */
-    createCacheDriver($config: Record<string, any>, driver: any) {
-        return this.adapt((new(require('./adapter/cache'))(this.$container.cache.driver(driver[1]), $config)))
+    public createCacheDriver($config: Record<string, any>, driver: any): any {
+        return this.adapt(new CacheAdapter(this.$container.cache.driver(driver[1]), $config));
     }
 
     /**
      * adapt method.
-     * @param {*} session
+     * @param session
      * @returns {any}
      */
-    adapt(session: any) {
+    public adapt(session: any): any {
         return new SessionStore(session);
     }
 
@@ -131,7 +135,7 @@ class SessionManager  extends Manager {
      * getDriverName method.
      * @returns {any}
      */
-    getDriverName() {
+    public getDriverName(): string {
         return super.getConfig('driver');
     }
 
@@ -139,9 +143,9 @@ class SessionManager  extends Manager {
      * getDefaultDriver method.
      * @returns {any}
      */
-    getDefaultDriver() {
+    public getDefaultDriver(): string {
         return this.getDriverName();
     }
 }
 
-module.exports = SessionManager
+export default SessionManager;
