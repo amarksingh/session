@@ -7,6 +7,8 @@ class SessionTableCommand extends Command {
     $signature: string = 'session:table';
     $description: string = 'Create a migration for the session database table';
     $files: any;
+    $app: any;
+    info: any;
 
     /**
      * Create a new SessionTableCommand instance.

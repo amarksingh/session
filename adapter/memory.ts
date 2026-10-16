@@ -4,6 +4,7 @@ const storage: Record<string, { updated_at: number; data: Record<string, any> }>
  * Class Memory session storage adapter.
  */
 class Memory {
+    constructor(...args: any[]) {}
     /**
      * Read session data for the given session ID.
      *

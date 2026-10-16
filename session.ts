@@ -219,9 +219,10 @@ class Session extends SessionInterface implements ISession {
                 [key as string]: value
             };
         }
-        for (const objKey in key) {
-            if (Object.prototype.hasOwnProperty.call(key, objKey)) {
-                set(this[kAttributes], objKey, (key as Record<string, any>)[objKey]);
+        const targetKey = key as Record<string, any>;
+        for (const objKey in targetKey) {
+            if (Object.prototype.hasOwnProperty.call(targetKey, objKey)) {
+                set(this[kAttributes], objKey, targetKey[objKey]);
                 this.touched = true;
             }
         }
