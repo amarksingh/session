@@ -1,62 +1,67 @@
-const path = require('path')
-const kConnection = Symbol('connection')
-const kMaxAge = Symbol('maxAge')
+const kConnection: unique symbol = Symbol('connection');
+const kMaxAge: unique symbol = Symbol('maxAge');
 
 /**
- * Class Cache.
+ * Class Cache session storage adapter.
  */
 class Cache {
+    [kConnection]: any;
+    [kMaxAge]: number | undefined;
+
     /**
      * Create a new instance.
-     * @param {*} connection
-     * @param {*} $config
+     *
+     * @param connection - Cache repository or store instance.
+     * @param $config - Session configuration dictionary.
      */
     constructor(connection: any, $config: Record<string, any>) {
         this[kConnection] = connection;
-        let driverOptions = $config.stores[$config['driver'].split('.')[0]];
-        this[kMaxAge] = typeof driverOptions == 'object' ? driverOptions.checkPeriod : undefined;
-
-    }
-    /**
-     * read method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
-     */
-    read(sid: any, cb: any) {
-        this[kConnection].get('session.' + sid).then(res => {
-            cb(null, JSON.parse(res))
-        }).catch(err => {
-            cb(err, null)
-        })
-    }
-    /**
-     * write method.
-     * @param {*} sid
-     * @param {*} data
-     * @param {*} cb
-     * @returns {any}
-     */
-    write(sid: any, data: Record<string, any>, cb: any) {
-        this[kConnection].put('session.' + sid, JSON.stringify(data), this[kMaxAge]).then(res => {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err, null)
-        })
-    }
-    /**
-     * destroy method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
-     */
-    destroy(sid: any, cb: any) {
-        this[kConnection].forget('session.' + sid).then(res => {
-            cb(null, true)
-        }).catch(err => {
-            cb(err, false)
-        })
+        const driverOptions: any = $config.stores[$config['driver'].split('.')[0]];
+        this[kMaxAge] = typeof driverOptions === 'object' ? driverOptions.checkPeriod : undefined;
     }
 
+    /**
+     * Read session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or data.
+     */
+    read(sid: string, cb: (err: any, data?: any) => void): void {
+        this[kConnection].get('session.' + sid).then((res: any) => {
+            cb(null, JSON.parse(res));
+        }).catch((err: any) => {
+            cb(err, null);
+        });
+    }
+
+    /**
+     * Write session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param data - Session attributes.
+     * @param cb - Callback receiving error or result.
+     */
+    write(sid: string, data: Record<string, any>, cb: (err: any, res?: any) => void): void {
+        this[kConnection].put('session.' + sid, JSON.stringify(data), this[kMaxAge]).then((res: any) => {
+            cb(null, res);
+        }).catch(function (err: any) {
+            cb(err, null);
+        });
+    }
+
+    /**
+     * Destroy session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or success boolean.
+     */
+    destroy(sid: string, cb: (err: any, success?: boolean) => void): void {
+        this[kConnection].forget('session.' + sid).then((res: any) => {
+            cb(null, true);
+        }).catch((err: any) => {
+            cb(err, false);
+        });
+    }
 }
-module.exports = Cache
+
+export = Cache;

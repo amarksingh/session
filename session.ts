@@ -1,33 +1,32 @@
 import type { ISession } from '@ostro/contracts/session/session';
+import SessionInterface from '@ostro/contracts/session/session';
+import { isPlainObject, merge, get, set, isObject, omit, uniq, difference, isArray, intersection } from 'lodash';
 
-const { isPlainObject, merge, get, set, isObject, omit, uniq, difference, isArray, intersection } = require('lodash');
-const SessionInterface = require('@ostro/contracts/session/session');
-const uid = require('uid-safe').sync;
-const kAttributes = Symbol('attributes');
-const kStore = Symbol('store');
-const kSessionId = Symbol('sessionid');
-const kResponse = Symbol('response');
-const kHandler = Symbol('handler');
+const kAttributes: unique symbol = Symbol('attributes');
+const kSessionId: unique symbol = Symbol('sessionid');
+const kResponse: unique symbol = Symbol('response');
+const kHandler: unique symbol = Symbol('handler');
 
 /**
- * Class Session.
+ * Class Session representing an active HTTP session instance.
  */
 class Session extends SessionInterface implements ISession {
     [kSessionId]: string;
     [kHandler]: any;
     [kAttributes]: Record<string, any>;
     [kResponse]: any;
-    existed: boolean;
-    touched: boolean;
+    existed: boolean = false;
+    touched: boolean = false;
 
     /**
-     * Create a new instance.
-     * @param {*} handler
-     * @param {*} __attributes
-     * @param {string} sessionId
-     * @param {*} response
+     * Create a new session instance.
+     *
+     * @param handler - Session storage handler.
+     * @param __attributes - Initial attributes or null.
+     * @param sessionId - Session identifier.
+     * @param response - Outgoing HTTP response.
      */
-    constructor(handler: any, __attributes: any, sessionId: any, response: any) {
+    constructor(handler: any, __attributes: any, sessionId: string, response: any) {
         super();
         this[kSessionId] = sessionId;
         Object.defineProperties(this, {
@@ -45,90 +44,91 @@ class Session extends SessionInterface implements ISession {
             existed: {
                 value: Boolean(__attributes)
             }
-
         });
         Object.defineProperty(this, 'touched', {
-            value: Boolean((this.get('__flash.__old',[])).length),
+            value: Boolean((this.get('__flash.__old', []))?.length),
             writable: true
-        })
+        });
     }
 
     /**
-     * getId method.
-     * @returns {any}
+     * Get the session ID.
+     *
+     * @returns Current session ID.
      */
-    getId() {
-        return this[kSessionId]
+    getId(): string {
+        return this[kSessionId];
     }
 
     /**
-     * flush method.
-     * @returns {any}
+     * Flush all attributes from the session.
+     *
+     * @returns Always returns true.
      */
-    flush() {
-        this.touched = true
-        this[kAttributes] = this[kHandler].structureobject()
+    flush(): boolean {
+        this.touched = true;
+        this[kAttributes] = this[kHandler].structureobject();
         return true;
     }
 
     /**
-     * save method.
-     * @param {*} callback
-     * @returns {any}
+     * Save the session attributes to storage.
+     *
+     * @param callback - Completion callback.
      */
-    save(callback: Function) {
-
-        this.get('__flash.__old', []).forEach((old) => {
+    save(callback: Function): void {
+        this.get('__flash.__old', []).forEach((old: string) => {
             this.forget(old);
         });
         this.put('__flash.__old', this.get('__flash.__new', []));
         this.put('__flash.__new', []);
-        this[kHandler].write(this[kSessionId], this[kAttributes], (err, data) => {
-            callback(err, data)
-        })
-
+        this[kHandler].write(this[kSessionId], this[kAttributes], (err: any, data: any) => {
+            callback(err, data);
+        });
     }
 
     /**
-     * pull method.
-     * @param {*} key
-     * @param {*} defaultValue
-     * @returns {any}
+     * Pull an attribute and remove it from the session.
+     *
+     * @typeParam T - Expected value type.
+     * @param key - Attribute key.
+     * @param defaultValue - Fallback value if not set.
+     * @returns Pulled value or fallback.
      */
-    pull(key: string, defaultValue: any) {
+    pull<T = unknown>(key: string, defaultValue?: T | null): T | null {
         if (this[kAttributes][key]) {
             defaultValue = this[kAttributes][key];
-            delete this[kAttributes][key]
-            this.touched = true
+            delete this[kAttributes][key];
+            this.touched = true;
         }
         return defaultValue || null;
     }
 
     /**
-     * regenerateToken method.
-     * @returns {any}
+     * Regenerate the CSRF token.
      */
-    regenerateToken() {
-        this.put('__token', );
+    regenerateToken(): void {
+        this.put('__token', undefined);
     }
 
     /**
-     * remove method.
-     * @param {*} $key
-     * @returns {any}
+     * Remove an attribute from the session.
+     *
+     * @param $key - Attribute key.
      */
-    remove($key: string) {
-        this.pull($key)
+    remove($key: string): void {
+        this.pull($key);
     }
 
     /**
-     * push method.
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Push a value onto an array session attribute.
+     *
+     * @typeParam T - Value type.
+     * @param key - Attribute key.
+     * @param value - Value to push.
      */
-    push(key: string, value: any) {
-        var array = this.get(key, []);
+    push<T = unknown>(key: string, value: T): void {
+        const array: any = this.get(key, []);
         if (isArray(array)) {
             array.push(value);
             this.put(key, array);
@@ -136,168 +136,174 @@ class Session extends SessionInterface implements ISession {
     }
 
     /**
-     * merge method.
-     * @param {*} key
-     * @param {*} value
-     * @param {*} defaultValue
-     * @returns {any}
+     * Merge values into an existing session attribute.
+     *
+     * @param key - Attribute key.
+     * @param value - Value to merge.
+     * @param defaultValue - Default fallback container.
      */
-    merge(key: string, value: any, defaultValue: Record<string, any> = {}) {
-        var data = this.get(key, defaultValue);
+    merge(key: string, value: any, defaultValue: Record<string, any> = {}): void {
+        const data: any = this.get(key, defaultValue);
         if (isArray(data)) {
             this.put(key, data.concat(value));
         } else if (isPlainObject(data)) {
-            this.put(key, merge(data, value))
+            this.put(key, merge(data, value));
         }
     }
 
     /**
-     * regenerate method.
-     * @param {*} destroy
-     * @param {*} cb
-     * @returns {any}
+     * Regenerate the session ID and optionally destroy old session.
+     *
+     * @param destroy - Whether to destroy old session data.
+     * @param cb - Optional callback.
      */
-    regenerate(destroy: any, cb: any) {
+    regenerate(destroy: boolean, cb?: Function): void {
         if (destroy) {
-            this[kHandler].destroy(this[kSessionId], cb)
+            this[kHandler].destroy(this[kSessionId], cb);
         }
-        this.flush()
-        this[kHandler].generateSidToCookie(this[kResponse])
+        this.flush();
+        this[kHandler].generateSidToCookie(this[kResponse]);
     }
 
     /**
-     * has method.
-     * @param {*} key
-     * @returns {any}
+     * Determine if an attribute exists in the session.
+     *
+     * @param key - Attribute key.
+     * @returns True if attribute exists.
      */
-    has(key: string) {
+    has(key: string): boolean {
         return get(this[kAttributes], key) != undefined;
     }
 
     /**
-     * forget method.
-     * @param {*} key
-     * @returns {any}
+     * Forget an attribute from the session.
+     *
+     * @param key - Attribute key.
      */
-    forget(key: string) {
-        this.touched = true
+    forget(key: string): void {
+        this.touched = true;
         delete this[kAttributes][key];
     }
 
     /**
-     * get method.
-     * @param {*} key
-     * @param {*} defaultValue
-     * @returns {any}
+     * Get an attribute from the session.
+     *
+     * @typeParam T - Expected return type.
+     * @param key - Attribute key.
+     * @param defaultValue - Fallback default value.
+     * @returns Attribute value or fallback.
      */
-    get(key: string, defaultValue: any) {
+    get<T = unknown>(key: string, defaultValue?: T | null): T | null {
         return get(this[kAttributes], key) || defaultValue || null;
     }
 
     /**
-     * all method.
-     * @returns {any}
+     * Get all session attributes except token and flash metadata.
+     *
+     * @returns Dictionary of all attributes.
      */
-    all() {
-        return omit(this[kAttributes], ['_token', 'flash'])
+    all(): Record<string, any> {
+        return omit(this[kAttributes], ['_token', 'flash']);
     }
 
     /**
-     * put method.
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Put a key-value pair or dictionary into the session.
+     *
+     * @typeParam T - Value type.
+     * @param key - Attribute key or key-value map.
+     * @param value - Value to store when key is a string.
      */
-    put(key: string, value: any) {
+    put<T = unknown>(key: string | Record<string, any>, value?: T): void {
         if (!isObject(key)) {
             key = {
-                [key]: value
+                [key as string]: value
             };
         }
-        for (let objKey in key) {
-            if (key.hasOwnProperty(objKey)) {
-                set(this[kAttributes], objKey, key[objKey])
-                this.touched = true
-
+        for (const objKey in key) {
+            if (Object.prototype.hasOwnProperty.call(key, objKey)) {
+                set(this[kAttributes], objKey, (key as Record<string, any>)[objKey]);
+                this.touched = true;
             }
         }
     }
 
     /**
-     * flash method.
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Flash a key-value pair or dictionary into the session.
+     *
+     * @typeParam T - Value type.
+     * @param key - Attribute key or key-value map.
+     * @param value - Value to store when key is a string.
      */
-    flash(key: string, value: any) {
+    flash<T = unknown>(key: string | Record<string, any>, value?: T): void {
         if (!isObject(key)) {
             key = {
-                [key]: value
+                [key as string]: value
             };
         }
         this.put(key);
-        this.put('__flash.__new', uniq(this.get('__flash.__new', []).concat(Object.keys(key))));
-        this.put('__flash.__old', difference(this.get('__flash.__old', []), Object.keys(key)));
+        this.put('__flash.__new', uniq((this.get('__flash.__new', []) as string[]).concat(Object.keys(key))));
+        this.put('__flash.__old', difference(this.get('__flash.__old', []) as string[], Object.keys(key)));
     }
 
     /**
-     * flashOnly method.
-     * @param {*} keys
-     * @returns {any}
+     * Retain only specified flashed keys.
+     *
+     * @param keys - Keys to retain.
      */
-    flashOnly(keys: any) {
+    flashOnly(keys: any): void {
         keys = Array.isArray(keys) ? keys : arguments;
-        let onlyKeys = intersection(this.get('__flash.__new', []), keys)
-        let exceptKeys = difference(this.get('__flash.__new', []), keys)
-        for (let except of exceptKeys) {
-            this.forget(except)
+        const onlyKeys = intersection(this.get('__flash.__new', []) as string[], keys);
+        const exceptKeys = difference(this.get('__flash.__new', []) as string[], keys);
+        for (const except of exceptKeys) {
+            this.forget(except);
         }
         this.put('__flash.__new', onlyKeys);
-        this.put('__flash.__old', difference(this.get('__flash.__old', []), keys));
+        this.put('__flash.__old', difference(this.get('__flash.__old', []) as string[], keys));
     }
 
     /**
-     * flashExcept method.
-     * @param {*} keys
-     * @returns {any}
+     * Flash all except specified keys.
+     *
+     * @param keys - Keys to exclude from flash.
      */
-    flashExcept(keys: any) {
+    flashExcept(keys: any): void {
         keys = Array.isArray(keys) ? keys : arguments;
-        let exceptKeys = intersection(this.get('__flash.__new', []), keys)
-        let onlyKeys = difference(this.get('__flash.__new', []), keys)
-        for (let except of exceptKeys) {
-            this.forget(except)
+        const exceptKeys = intersection(this.get('__flash.__new', []) as string[], keys);
+        const onlyKeys = difference(this.get('__flash.__new', []) as string[], keys);
+        for (const except of exceptKeys) {
+            this.forget(except);
         }
         this.put('__flash.__new', onlyKeys);
-        this.put('__flash.__old', difference(this.get('__flash.__old', []), keys));
+        this.put('__flash.__old', difference(this.get('__flash.__old', []) as string[], keys));
     }
 
     /**
-     * reflash method.
-     * @returns {any}
+     * Reflash all current flash data for another request.
      */
-    reflash() {
-        this.put('__flash.__new', uniq((this.get('__flash.__new', [])).concat(this.get('__flash.__old', []))));
+    reflash(): void {
+        this.put('__flash.__new', uniq((this.get('__flash.__new', []) as string[]).concat(this.get('__flash.__old', []) as string[])));
         this.put('__flash.__old', []);
     }
 
     /**
-     * keep method.
-     * @param {*} keys
-     * @returns {any}
+     * Keep specific or all flashed items.
+     *
+     * @param keys - Keys to keep.
      */
-    keep(keys: any) {
+    keep(keys: any): void {
         keys = isArray(keys) ? keys : Array.prototype.slice.call(arguments);
-        this.put('__flash.__new', uniq(this.get('__flash.__new', []).concat(keys)));
-        this.put('__flash.__old', difference(this.get('__flash.__old', []), keys));
+        this.put('__flash.__new', uniq((this.get('__flash.__new', []) as string[]).concat(keys)));
+        this.put('__flash.__old', difference(this.get('__flash.__old', []) as string[], keys));
     }
 
     /**
-     * token method.
-     * @returns {any}
+     * Get the CSRF token.
+     *
+     * @returns CSRF token string or null.
      */
-    token() {
+    token(): string | null {
         return this.get('__token');
     }
 }
-module.exports = Session
+
+export = Session;

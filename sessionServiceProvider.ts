@@ -1,44 +1,41 @@
-const ServiceProvider = require('@ostro/support/serviceProvider');
-const SessionManager = require('./sessionManager')
+import ServiceProvider from '@ostro/support/serviceProvider';
+import SessionManager from './sessionManager';
+
 /**
  * Class SessionServiceProvider.
  */
 class SessionServiceProvider extends ServiceProvider {
     /**
-     * register method.
-     * @returns {any}
+     * Register session services in container.
      */
-    register() {
+    register(): void {
         this.registerSessionManager();
     }
 
     /**
-     * boot method.
-     * @returns {any}
+     * Boot session services.
      */
-    boot() {
+    boot(): void {
         this.registerSessionDriver();
     }
 
     /**
-     * registerSessionManager method.
-     * @returns {any}
+     * Register SessionManager singleton.
      */
-    registerSessionManager() {
-        this.$app.singleton('session', function(app) {
+    registerSessionManager(): void {
+        this.$app.singleton('session', function (app: any) {
             return new SessionManager(app);
         });
     }
 
     /**
-     * registerSessionDriver method.
-     * @returns {any}
+     * Register default session driver singleton.
      */
-    registerSessionDriver() {
-        this.$app.singleton('session.store', function(app) {
+    registerSessionDriver(): void {
+        this.$app.singleton('session.store', function (app: any) {
             return app.session.driver();
         });
     }
-
 }
-module.exports = SessionServiceProvider
+
+export = SessionServiceProvider;

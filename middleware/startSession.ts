@@ -1,31 +1,39 @@
+import SessionManager from '../sessionManager';
+
 /**
- * Class startSession.
+ * Class startSession middleware.
  */
 class startSession {
+    declare $app: any;
+    $session: any;
+    $registered?: boolean;
+    startSession?: any;
+
     /**
-     * Create a new instance.
+     * Create a new startSession middleware instance.
      */
     constructor() {
-        this.$session = this.$app['session'];
-        if (this.$session instanceof require('../sessionManager')) {
+        this.$session = (this as any).$app['session'];
+        if (this.$session instanceof SessionManager) {
             this.$registered = true;
-            this.startSession = this.$session.start()
+            this.startSession = this.$session.start();
         }
     }
 
     /**
-     * handle method.
-     * @param {*} { request
-     * @param {*} response
-     * @param {*} next }
-     * @returns {any}
+     * Handle incoming HTTP request.
+     *
+     * @param context - Request context containing request, response, and next.
+     * @param context.request - Incoming HTTP request.
+     * @param context.response - Outgoing HTTP response.
+     * @param context.next - Next middleware callback.
      */
-    handle({ request, response, next }: Record<string, any>) {
+    handle({ request, response, next }: { request: any; response: any; next: (err?: any) => void }): void {
         if (!this.$registered) {
-            return next()
+            return next();
         }
-        this.startSession(request, response, next)
+        this.startSession(request, response, next);
     }
 }
 
-module.exports = startSession
+export = startSession;

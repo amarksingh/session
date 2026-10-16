@@ -1,63 +1,63 @@
-var storage = Object.create(null)
+const storage: Record<string, { updated_at: number; data: Record<string, any> }> = Object.create(null);
+
 /**
- * Class Memory.
+ * Class Memory session storage adapter.
  */
 class Memory {
     /**
-     * read method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Read session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or data.
      */
-    read(sid: any, cb: any) {
-
+    read(sid: string, cb: (err: any, data?: any) => void): void {
         if (storage[sid]) {
-            cb(null, storage[sid].data)
+            cb(null, storage[sid].data);
         } else {
-            cb(true, null)
+            cb(true, null);
         }
     }
 
     /**
-     * write method.
-     * @param {*} sid
-     * @param {*} data
-     * @param {*} cb
-     * @returns {any}
+     * Write session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param data - Session attributes.
+     * @param cb - Completion callback.
      */
-    write(sid: any, data: Record<string, any>, cb: any) {
+    write(sid: string, data: Record<string, any>, cb: (err: any) => void): void {
         storage[sid] = {
             updated_at: Date.now(),
             data: data
-        }
-        cb(null)
+        };
+        cb(null);
     }
 
     /**
-     * destroy method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Destroy session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Completion callback.
      */
-    destroy(sid: any, cb: any) {
+    destroy(sid: string, cb: (err: any) => void): void {
         if (storage[sid]) {
             delete storage[sid];
         }
-        cb(null)
+        cb(null);
     }
 
     /**
-     * destroyExpireSession method.
-     * @param {*} maxAge
-     * @returns {any}
+     * Destroy expired sessions exceeding maxAge.
+     *
+     * @param maxAge - Maximum session age in minutes.
      */
-    destroyExpireSession(maxAge: any) {
-        Object.keys(storage).map(sid => {
-            if (storage[sid].updated_at < (Date.now() - (maxAge*60000))) {
+    destroyExpireSession(maxAge: number): void {
+        Object.keys(storage).forEach(sid => {
+            if (storage[sid].updated_at < (Date.now() - (maxAge * 60000))) {
                 delete storage[sid];
             }
-        })
-    };
-
+        });
+    }
 }
-module.exports = Memory
+
+export = Memory;

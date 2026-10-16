@@ -1,39 +1,52 @@
-var proxyaddr = require('proxy-addr');
+import proxyaddr from 'proxy-addr';
 
-var util = {};
+interface IUtil {
+    defineMember(obj: Record<string, any>, name: string): void;
+    compileTrust(val: any): Function;
+}
 
-util.defineMember = function(obj, name) {
-    var nameSplit = name.split('.');
-    var i;
-    var exists = obj;
+const util: IUtil = {
+    /**
+     * Recursively define nested member objects.
+     *
+     * @param obj - Target object.
+     * @param name - Dot-notated member path.
+     */
+    defineMember(obj: Record<string, any>, name: string): void {
+        const nameSplit: string[] = name.split('.');
+        let exists: any = obj;
 
-    for (i = 0; i < nameSplit.length - 1; i++) {
-        if (!exists.hasOwnProperty(nameSplit[i]) || typeof exists[nameSplit[i]] !== 'object') {
-            exists[nameSplit[i]] = {};
+        for (let i = 0; i < nameSplit.length - 1; i++) {
+            if (!Object.prototype.hasOwnProperty.call(exists, nameSplit[i]) || typeof exists[nameSplit[i]] !== 'object') {
+                exists[nameSplit[i]] = {};
+            }
+            exists = exists[nameSplit[i]];
         }
-        exists = exists[nameSplit[i]]
+    },
+
+    /**
+     * Compile trust configuration into a trust checking function.
+     *
+     * @param val - Trust configuration value.
+     * @returns Trust evaluation function.
+     */
+    compileTrust(val: any): Function {
+        if (typeof val === 'function') return val;
+
+        if (val === true) {
+            return function (): boolean { return true; };
+        }
+
+        if (typeof val === 'number') {
+            return function (a: any, i: number): boolean { return i < val; };
+        }
+
+        if (typeof val === 'string') {
+            val = val.split(/ *, */);
+        }
+
+        return proxyaddr.compile(val || []);
     }
 };
 
-util.compileTrust = function(val) {
-    if (typeof val === 'function') return val;
-
-    if (val === true) {
-
-        return function() { return true };
-    }
-
-    if (typeof val === 'number') {
-
-        return function(a, i) { return i < val };
-    }
-
-    if (typeof val === 'string') {
-
-        val = val.split(/ *, */);
-    }
-
-    return proxyaddr.compile(val || []);
-};
-
-module.exports = util;
+export = util;

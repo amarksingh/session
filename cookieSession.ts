@@ -1,24 +1,33 @@
-const Jar = require('@ostro/cookie/jar')
-const session = require('./session')
-const signature = require('cookie-signature');
-const uid = require('uid-safe').sync
-const tokens = require('csrf')({
+import Jar from '@ostro/cookie/jar';
+import Session from './session';
+import uidSafe from 'uid-safe';
+import csrf from 'csrf';
+import Cookie from '@ostro/cookie/cookie';
+
+const uid = uidSafe.sync;
+const tokens = new csrf({
     saltLength: 30
-})
-const kConfig = Symbol('config')
-const kStore = Symbol('store')
-const kGetSessionId = Symbol('getSessionId')
-const kCookie = Symbol('cookie')
-const Cookie = require('@ostro/cookie/cookie')
+});
+
+const kConfig: unique symbol = Symbol('config');
+const kStore: unique symbol = Symbol('store');
+const kGetSessionId: unique symbol = Symbol('getSessionId');
+const kCookie: unique symbol = Symbol('cookie');
+
 /**
- * Class CookieSession.
+ * Class CookieSession handling session cookie lifecycle and request binding.
  */
 class CookieSession {
+    [kStore]: any;
+    [kConfig]: Record<string, any>;
+    [kCookie]: any;
+
     /**
-     * Create a new instance.
-     * @param {*} $app
-     * @param {*} $config
-     * @param {*} $store
+     * Create a new CookieSession instance.
+     *
+     * @param $app - Application instance.
+     * @param $config - Session configuration dictionary.
+     * @param $store - Session store instance.
      */
     constructor($app: any, $config: Record<string, any>, $store: any) {
         this[kStore] = $store;
@@ -27,80 +36,93 @@ class CookieSession {
     }
 
     /**
-     * start method.
-     * @param {*} request
-     * @param {*} response
-     * @param {*} next
-     * @returns {any}
+     * Start the session and attach session instance to request.
+     *
+     * @param request - Incoming HTTP request.
+     * @param response - Outgoing HTTP response.
+     * @param next - Next middleware callback.
      */
-    start(request: any, response: any, next: Function) {
-        let headerCookies = request.headers.cookie
-        let cookies = null
+    start(request: any, response: any, next: (err?: any) => void): void {
+        const headerCookies: string | undefined = request.headers.cookie;
+        let cookies: any = null;
         if (request.cookie instanceof Cookie) {
-            cookies = request.cookie.all()
+            cookies = request.cookie.all();
         } else {
-            cookies = this[kCookie].getCookies(headerCookies)
+            cookies = this[kCookie].getCookies(headerCookies);
         }
         if (cookies) {
-            cookies = this[kCookie].getSignedCookies(cookies, this[kConfig]['key'])
+            cookies = this[kCookie].getSignedCookies(cookies, this[kConfig]['key']);
         }
-        let sid = this[kGetSessionId]((cookies || {})[this[kConfig]['cookie']])
-        this[kStore].read(sid, (err, data) => {
+        const sid: string = this[kGetSessionId]((cookies || {})[this[kConfig]['cookie']]);
+        this[kStore].read(sid, (err: any, data: any) => {
             Object.defineProperty(request, 'session', {
-                value: new session(this, data, sid, response),
+                value: new Session(this, data, sid, response),
                 enumerable: true
-            })
-            next()
-        })
+            });
+            next();
+        });
     }
 
-    [kGetSessionId](id) {
+    /**
+     * Validate or generate session ID.
+     *
+     * @param id - Candidate session ID.
+     * @returns Validated session ID.
+     */
+    [kGetSessionId](id?: any): string {
         if (!(typeof id === 'string' && /^[A-Za-z0-9-_]/.test(id))) {
             id = uid(30);
         }
         return id;
     }
 
-    generateSidToCookie(response, val = uid(30)) {
+    /**
+     * Generate session ID and append signed Set-Cookie header to response.
+     *
+     * @param response - HTTP response.
+     * @param val - Session ID value.
+     */
+    generateSidToCookie(response: any, val: string = uid(30)): void {
         response.append('Set-Cookie', this[kCookie].createCookies(this[kConfig]['cookie'], String(val), {
             signed: true
         }, response.request.secure()));
     }
 
     /**
-     * structureobject method.
-     * @returns {any}
+     * Generate default structure for a new session.
+     *
+     * @returns Default session structure object.
      */
-    structureobject() {
+    structureobject(): { __token: string; __flash: { __old: string[]; __new: string[] } } {
         return {
             __token: tokens.create(this[kConfig]['key']),
             __flash: {
                 "__old": [],
                 "__new": []
             }
-        }
+        };
     }
 
     /**
-     * write method.
-     * @param {*} sessionId
-     * @param {*} __attributes
-     * @param {*} cb
-     * @returns {any}
+     * Write session attributes to store.
+     *
+     * @param sessionId - Session ID.
+     * @param __attributes - Attributes to save.
+     * @param cb - Completion callback.
      */
-    write(sessionId: any, __attributes: any, cb: any) {
-        this[kStore].write(sessionId, __attributes, cb)
+    write(sessionId: string, __attributes: any, cb?: (err: any, data?: any) => void): void {
+        this[kStore].write(sessionId, __attributes, cb);
     }
 
     /**
-     * destroy method.
-     * @param {*} sessionId
-     * @param {*} cb
-     * @returns {any}
+     * Destroy session data in store.
+     *
+     * @param sessionId - Session ID.
+     * @param cb - Completion callback.
      */
-    destroy(sessionId: any, cb: any) {
-        this[kStore].destroy(sessionId, cb)
+    destroy(sessionId: string, cb?: (err: any) => void): void {
+        this[kStore].destroy(sessionId, cb);
     }
-
 }
-module.exports = CookieSession
+
+export = CookieSession;

@@ -1,16 +1,18 @@
-const fs = require('fs-extra')
-const path = require('path')
-const kConnection = Symbol('connection')
-const kTable = Symbol('table')
+const kConnection: unique symbol = Symbol('connection');
+const kTable: unique symbol = Symbol('table');
 
 /**
- * Class Database.
+ * Class Database session storage adapter.
  */
 class Database {
+    [kConnection]: any;
+    [kTable]: string;
+
     /**
      * Create a new instance.
-     * @param {*} connection
-     * @param {*} table
+     *
+     * @param connection - Database connection instance.
+     * @param table - Database table name.
      */
     constructor(connection: any, table: string) {
         this[kConnection] = connection;
@@ -18,47 +20,47 @@ class Database {
     }
 
     /**
-     * read method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Read session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or data.
      */
-    read(sid: any, cb: any) {
-        this[kConnection].table(this[kTable]).where({ sid }).value('payload').then(res => {
-            cb(null, (res ? JSON.parse(res) : null))
-        }).catch(err => {
-            cb(err, null)
-        })
+    read(sid: string, cb: (err: any, data?: any) => void): void {
+        this[kConnection].table(this[kTable]).where({ sid }).value('payload').then((res: any) => {
+            cb(null, (res ? JSON.parse(res) : null));
+        }).catch((err: any) => {
+            cb(err, null);
+        });
     }
 
     /**
-     * write method.
-     * @param {*} sid
-     * @param {*} data
-     * @param {*} cb
-     * @returns {any}
+     * Write session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param data - Session attributes.
+     * @param cb - Callback receiving error or result.
      */
-    write(sid: any, data: Record<string, any>, cb: any) {
-        this[kConnection].table(this[kTable]).updateOrInsert({ sid }, { payload: JSON.stringify(data) }).then(res => {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err, null)
-        })
+    write(sid: string, data: Record<string, any>, cb: (err: any, res?: any) => void): void {
+        this[kConnection].table(this[kTable]).updateOrInsert({ sid }, { payload: JSON.stringify(data) }).then((res: any) => {
+            cb(null, res);
+        }).catch(function (err: any) {
+            cb(err, null);
+        });
     }
 
     /**
-     * destroy method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Destroy session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or success boolean.
      */
-    destroy(sid: any, cb: any) {
-        this[kConnection].table(this[kTable]).where({ sid }).delete().then(res => {
-            cb(null, true)
-        }).catch(err => {
-            cb(err, false)
-        })
+    destroy(sid: string, cb: (err: any, success?: boolean) => void): void {
+        this[kConnection].table(this[kTable]).where({ sid }).delete().then((res: any) => {
+            cb(null, true);
+        }).catch((err: any) => {
+            cb(err, false);
+        });
     }
-
 }
-module.exports = Database
+
+export = Database;

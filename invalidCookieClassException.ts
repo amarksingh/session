@@ -2,17 +2,22 @@
  * Class InvalidCookieClassException.
  */
 class InvalidCookieClassException {
+    name: string;
+    message: string;
+    statusCode: number;
+    stack?: string;
+
     /**
      * Create a new instance.
-     * @param {*} message
+     *
+     * @param message - Exception message.
      */
     constructor(message: string) {
         this.name = this.constructor.name;
         this.message = message;
         this.statusCode = 500;
         Error.captureStackTrace(this, this.constructor);
-
     }
 }
 
-module.exports = InvalidCookieClassException
+export = InvalidCookieClassException;

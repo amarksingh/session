@@ -1,19 +1,25 @@
 /**
  * Class SessionStoreException.
  */
-class SessionStoreException{
+class SessionStoreException {
+    name: string;
+    message: string;
+    errors: unknown;
+    statusCode: number;
+    stack?: string;
+
     /**
      * Create a new instance.
-     * @param {*} err
+     *
+     * @param err - Underlying error or errors.
      */
-    constructor(err: any) {
+    constructor(err: unknown) {
         this.name = this.constructor.name;
-        this.message =  'Unable to store session';
-        this.errors =  err;
+        this.message = 'Unable to store session';
+        this.errors = err;
         this.statusCode = 500;
         Error.captureStackTrace(this, this.constructor);
-
     }
 }
 
-module.exports= SessionStoreException
+export = SessionStoreException;

@@ -1,50 +1,44 @@
-const Command = require('@ostro/console/command')
+import Command from '@ostro/console/command';
 
 /**
  * Class SessionTableCommand.
  */
 class SessionTableCommand extends Command {
-
-    $signature = 'session:table';
-
-    $description = 'Create a migration for the session database table';
-
-    $files;
+    $signature: string = 'session:table';
+    $description: string = 'Create a migration for the session database table';
+    $files: any;
 
     /**
-     * Create a new instance.
-     * @param {*} $files
+     * Create a new SessionTableCommand instance.
+     *
+     * @param $files - Filesystem service.
      */
     constructor($files: any) {
-        super()
-
+        super();
         this.$files = $files;
     }
 
     /**
-     * handle method.
-     * @async
-     * @returns {any}
+     * Handle command execution.
      */
-    async handle() {
-        let $fullPath = await this.createBaseMigration();
+    async handle(): Promise<void> {
+        const $fullPath: string = await this.createBaseMigration();
         await this.$files.put($fullPath, await this.$files.get(__dirname + '/stubs/database.stub'));
 
         this.info('Migration created successfully!');
-
     }
 
     /**
-     * createBaseMigration method.
-     * @returns {any}
+     * Create base migration file.
+     *
+     * @returns Created migration path.
      */
-    createBaseMigration() {
-        let $name = 'create_sessions_table';
-
-        let $path = this.$app.databasePath('migrations');
+    createBaseMigration(): any {
+        const $name: string = 'create_sessions_table';
+        const $path: string = this.$app.databasePath('migrations');
 
         return this.$app['migration.creator'].create($name, $path);
     }
 }
 
-module.exports = SessionTableCommand
+export = SessionTableCommand;

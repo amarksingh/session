@@ -1,90 +1,103 @@
-const onHeaders = require('on-headers');
-const SessionStoreException = require('./sessionStoreException')
-const kStore = Symbol('store')
-const kHandler = Symbol('handler')
-const kConfig = Symbol('config')
-const kCloseSession = Symbol('closeSession')
-const { random } = require('lodash')
+import onHeaders from 'on-headers';
+import SessionStoreException from './sessionStoreException';
+import { random } from 'lodash';
+
+const kStore: unique symbol = Symbol('store');
+const kHandler: unique symbol = Symbol('handler');
+const kConfig: unique symbol = Symbol('config');
+const kCloseSession: unique symbol = Symbol('closeSession');
 
 /**
- * Class SessionStarter.
+ * Class SessionStarter orchestrating session start, response cookie writing, and auto-save.
  */
 class SessionStarter {
+    [kConfig]: Record<string, any>;
+    [kHandler]: any;
+    [kStore]: any;
+
     /**
-     * Create a new instance.
-     * @param {*} config
-     * @param {*} handler
-     * @param {*} store
+     * Create a new SessionStarter instance.
+     *
+     * @param config - Session configuration dictionary.
+     * @param handler - Session handler instance.
+     * @param store - Session storage instance.
      */
-    constructor(config: Record<string, any>, handler: Function, store: any) {
+    constructor(config: Record<string, any>, handler: any, store: any) {
         this[kConfig] = config;
         this[kHandler] = handler;
         this[kStore] = store;
     }
 
     /**
-     * start method.
-     * @param {*} request
-     * @param {*} response
-     * @param {*} next
-     * @returns {any}
+     * Intercept request and response to initialize and terminate session.
+     *
+     * @param request - Incoming HTTP request.
+     * @param response - Outgoing HTTP response.
+     * @param next - Next middleware callback.
      */
-    start(request: any, response: any, next: Function) {
-        let end = response.end
-        let ended = false;
+    start(request: any, response: any, next: (err?: any) => void): void {
+        const end = response.end;
+        let ended: boolean = false;
         onHeaders(response, () => {
-            if(request.hasOwnProperty("session")){
-                this[kHandler].generateSidToCookie(response, request.session.getId())
+            if (Object.prototype.hasOwnProperty.call(request, 'session')) {
+                this[kHandler].generateSidToCookie(response, request.session.getId());
             }
         });
-        
-        response.end = (...argument) => {
+
+        response.end = (...argument: any[]) => {
             if ([404, 500].includes(response.statusCode)) {
-                return end.apply(response, argument)
+                return end.apply(response, argument);
             }
             if (ended) {
                 return;
             }
-            ended = true
-            this[kCloseSession](request, response, function(err) {
+            ended = true;
+            this[kCloseSession](request, response, (err: any) => {
                 if (err) {
-                    return next(new SessionStoreException(err))
+                    return next(new SessionStoreException(err));
                 }
-                end.apply(response, argument)
+                end.apply(response, argument);
             });
         };
-        this[kHandler].start(request, response, next)
+        this[kHandler].start(request, response, next);
     }
 
-    [kCloseSession](request, response, callback) {
-        if (request.session.touched == true || (this[kConfig]['resave'] == true && request.session.existed == true) || (request.session.existed == false && this[kConfig]['saveUninitialized'] == true)) {
-            request.session.save(callback)
+    /**
+     * Close the session and save changes if modified.
+     *
+     * @param request - HTTP request.
+     * @param response - HTTP response.
+     * @param callback - Completion callback.
+     */
+    [kCloseSession](request: any, response: any, callback: (err?: any) => void): void {
+        if (request.session.touched === true || (this[kConfig]['resave'] === true && request.session.existed === true) || (request.session.existed === false && this[kConfig]['saveUninitialized'] === true)) {
+            request.session.save(callback);
         } else {
-            callback(null)
+            callback(null);
         }
         this.collectGarbage();
-
     }
 
     /**
-     * collectGarbage method.
-     * @returns {any}
+     * Clean up expired sessions from store if lottery hits.
      */
-    collectGarbage() {
-
+    collectGarbage(): void {
         if (this.configHitsLottery()) {
-            var period = parseInt(this[kConfig]['lifetime'])+1;
-            typeof this[kStore]['destroyExpireSession'] == 'function' && this[kStore].destroyExpireSession(period);
+            const period: number = parseInt(this[kConfig]['lifetime']) + 1;
+            if (typeof this[kStore]['destroyExpireSession'] === 'function') {
+                this[kStore].destroyExpireSession(period);
+            }
         }
     }
 
     /**
-     * configHitsLottery method.
-     * @returns {any}
+     * Determine if lottery odds trigger garbage collection.
+     *
+     * @returns True if lottery succeeds.
      */
-    configHitsLottery() {
+    configHitsLottery(): boolean {
         return (random(1, this[kConfig]['lottery'][1]) <= this[kConfig]['lottery'][0]);
     }
-
 }
-module.exports = SessionStarter;
+
+export = SessionStarter;

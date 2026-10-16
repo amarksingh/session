@@ -1,72 +1,77 @@
-const fs = require('fs-extra')
-const path = require('path')
-const kPath = Symbol('path')
+import fs from 'fs-extra';
+import path from 'path';
+
+const kPath: unique symbol = Symbol('path');
+
 /**
- * Class File.
+ * Class File session storage adapter.
  */
 class File {
+    [kPath]: string;
+
     /**
      * Create a new instance.
-     * @param {*} path
+     *
+     * @param storagePath - Directory path for storing session files.
      */
-    constructor(path: string) {
-        this[kPath] = path;
+    constructor(storagePath: string) {
+        this[kPath] = storagePath;
         fs.mkdirSync(this[kPath], {
             recursive: true
-        })
+        });
     }
 
     /**
-     * read method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Read session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error or data.
      */
-    read(sid: any, cb: any) {
-        fs.readJson(path.join(this[kPath], sid), cb)
+    read(sid: string, cb: (err: any, data?: any) => void): void {
+        fs.readJson(path.join(this[kPath], sid), cb);
     }
 
     /**
-     * write method.
-     * @param {*} sid
-     * @param {*} data
-     * @param {*} cb
-     * @returns {any}
+     * Write session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param data - Session attributes.
+     * @param cb - Completion callback.
      */
-    write(sid: any, data: Record<string, any>, cb: any) {
-        fs.writeJson(path.join(this[kPath], sid), data, cb)
+    write(sid: string, data: Record<string, any>, cb: (err: any) => void): void {
+        fs.writeJson(path.join(this[kPath], sid), data, cb);
     }
 
     /**
-     * destroy method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Destroy session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Completion callback.
      */
-    destroy(sid: any, cb: any) {
-        fs.unlink(path.join(this[kPath], sid), function(err) {
-            if (typeof cb == 'function') {
-                cb(err)
+    destroy(sid: string, cb?: (err: any) => void): void {
+        fs.unlink(path.join(this[kPath], sid), function (err: any) {
+            if (typeof cb === 'function') {
+                cb(err);
             }
-        })
+        });
     }
 
     /**
-     * destroyExpireSession method.
-     * @param {*} maxAge
-     * @returns {any}
+     * Destroy expired sessions exceeding maxAge.
+     *
+     * @param maxAge - Maximum session age in minutes.
      */
-    destroyExpireSession(maxAge: any) {
-        var self = this;
-        fs.readdir(this[kPath], (err, files) => {
+    destroyExpireSession(maxAge: number): void {
+        const self = this;
+        fs.readdir(this[kPath], (err: any, files: string[]) => {
             if (err || files.length === 0) {
                 return;
             }
-            files.forEach((file) => {
-                if (file[0] != '.') {
-                    fs.stat(path.join(this[kPath], file), function(err, stat) {
-                        if (!err) {
-                            if (stat.isFile() && ((new Date()).getTime() - stat.atime.getTime() > (maxAge*60000))) {
+            files.forEach((file: string) => {
+                if (file[0] !== '.') {
+                    fs.stat(path.join(this[kPath], file), function (statErr: any, stat: any) {
+                        if (!statErr) {
+                            if (stat.isFile() && ((new Date()).getTime() - stat.atime.getTime() > (maxAge * 60000))) {
                                 self.destroy(file);
                             }
                         }
@@ -74,7 +79,7 @@ class File {
                 }
             });
         });
-    };
-
+    }
 }
-module.exports = File
+
+export = File;

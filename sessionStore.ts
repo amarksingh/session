@@ -1,53 +1,59 @@
-const kStore = Symbol('store')
+const kStore: unique symbol = Symbol('store');
+
 /**
  * Class SessionStore.
  */
 class SessionStore {
+    [kStore]: any;
+
     /**
      * Create a new instance.
-     * @param {*} $store
+     *
+     * @param $store - Underlying session storage adapter.
      */
     constructor($store: any) {
-        this[kStore] = $store
+        this[kStore] = $store;
     }
-    /**
-     * read method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
-     */
-    read(sid: string = '', cb: any) {
-        this[kStore].read(sid, cb)
-    }
-    /**
-     * write method.
-     * @param {*} sid
-     * @param {*} data
-     * @param {*} cb
-     * @returns {any}
-     */
-    write(sid: string = '', data: Record<string, any>, cb: any) {
-        this[kStore].write(sid, data, cb)
 
-    }
     /**
-     * destroy method.
-     * @param {*} sid
-     * @param {*} cb
-     * @returns {any}
+     * Read session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Callback receiving error and data.
      */
-    destroy(sid: string = '', cb: any) {
-        this[kStore].destroy(sid, cb)
-
+    read(sid: string = '', cb: (err: any, data?: any) => void): void {
+        this[kStore].read(sid, cb);
     }
-    /**
-     * destroyExpireSession method.
-     * @param {*} maxAge
-     * @returns {any}
-     */
-    destroyExpireSession(maxAge: any) {
-        this[kStore].destroyExpireSession(maxAge)
 
-    };
+    /**
+     * Write session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param data - Session attributes map.
+     * @param cb - Completion callback.
+     */
+    write(sid: string = '', data: Record<string, any>, cb: (err?: any) => void): void {
+        this[kStore].write(sid, data, cb);
+    }
+
+    /**
+     * Destroy session data for the given session ID.
+     *
+     * @param sid - Session ID.
+     * @param cb - Completion callback.
+     */
+    destroy(sid: string = '', cb: (err?: any) => void): void {
+        this[kStore].destroy(sid, cb);
+    }
+
+    /**
+     * Destroy expired sessions exceeding maxAge.
+     *
+     * @param maxAge - Maximum session age in minutes.
+     */
+    destroyExpireSession(maxAge: number): void {
+        this[kStore].destroyExpireSession(maxAge);
+    }
 }
-module.exports = SessionStore
+
+export = SessionStore;
