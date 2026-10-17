@@ -1,8 +1,8 @@
-const _CookieSession = require('../cookieSession');
+const _CookieSession = require('../src/cookieSession');
 const CookieSession = _CookieSession.default || _CookieSession;
 const _Cookie = require('@ostro/cookie/cookie');
 const Cookie = _Cookie.default || _Cookie;
-const _SessionStore = require('../sessionStore');
+const _SessionStore = require('../src/sessionStore');
 const SessionStore = _SessionStore.default || _SessionStore;
 
 describe('CookieSession', () => {

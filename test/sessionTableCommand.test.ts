@@ -1,5 +1,5 @@
 const path = require('path');
-const _SessionTableCommand = require('../console/sessionTableCommand');
+const _SessionTableCommand = require('../src/console/sessionTableCommand');
 const SessionTableCommand = _SessionTableCommand.default || _SessionTableCommand;
 
 describe('console/sessionTableCommand', () => {
@@ -24,7 +24,7 @@ describe('console/sessionTableCommand', () => {
 
         expect(mockApp.databasePath).toHaveBeenCalledWith('migrations');
         expect(mockApp['migration.creator'].create).toHaveBeenCalledWith('create_sessions_table', '/project/database/migrations');
-        expect(mockFiles.get).toHaveBeenCalledWith(path.resolve(__dirname, '../console/stubs/database.stub'));
+        expect(mockFiles.get).toHaveBeenCalledWith(path.resolve(__dirname, '../src/console/stubs/database.stub'));
         expect(mockFiles.put).toHaveBeenCalledWith(
             '/project/database/migrations/2026_01_01_000000_create_sessions_table.js',
             'MIGRATION_STUB_CONTENT'

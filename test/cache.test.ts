@@ -1,4 +1,4 @@
-const _CacheAdapter = require('../adapter/cache');
+const _CacheAdapter = require('../src/adapter/cache');
 const CacheAdapter = _CacheAdapter.default || _CacheAdapter;
 
 describe('adapter/cache', () => {

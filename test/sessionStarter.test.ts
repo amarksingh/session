@@ -1,6 +1,6 @@
-const _SessionStarter = require('../sessionStarter');
+const _SessionStarter = require('../src/sessionStarter');
 const SessionStarter = _SessionStarter.default || _SessionStarter;
-const _SessionStoreException = require('../sessionStoreException');
+const _SessionStoreException = require('../src/sessionStoreException');
 const SessionStoreException = _SessionStoreException.default || _SessionStoreException;
 
 describe('SessionStarter', () => {

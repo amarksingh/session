@@ -1,4 +1,4 @@
-const _DatabaseAdapter = require('../adapter/database');
+const _DatabaseAdapter = require('../src/adapter/database');
 const DatabaseAdapter = _DatabaseAdapter.default || _DatabaseAdapter;
 
 describe('adapter/database', () => {

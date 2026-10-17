@@ -1,4 +1,4 @@
-const _Session = require('../session');
+const _Session = require('../src/session');
 const Session = _Session.default || _Session;
 
 describe('Session', () => {

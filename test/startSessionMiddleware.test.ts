@@ -1,6 +1,6 @@
-const _StartSessionMiddleware = require('../middleware/startSession');
+const _StartSessionMiddleware = require('../src/middleware/startSession');
 const StartSessionMiddleware = _StartSessionMiddleware.default || _StartSessionMiddleware;
-const _SessionManager = require('../sessionManager');
+const _SessionManager = require('../src/sessionManager');
 const SessionManager = _SessionManager.default || _SessionManager;
 
 describe('middleware/startSession', () => {

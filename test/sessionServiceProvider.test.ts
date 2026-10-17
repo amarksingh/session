@@ -1,6 +1,6 @@
-const _SessionServiceProvider = require('../sessionServiceProvider');
+const _SessionServiceProvider = require('../src/sessionServiceProvider');
 const SessionServiceProvider = _SessionServiceProvider.default || _SessionServiceProvider;
-const _SessionManager = require('../sessionManager');
+const _SessionManager = require('../src/sessionManager');
 const SessionManager = _SessionManager.default || _SessionManager;
 
 describe('SessionServiceProvider', () => {

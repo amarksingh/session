@@ -3,7 +3,7 @@
   "version": "2.0.0-alpha.1",
   "description": "Session module for OstroJS",
   "scripts": {
-    "build": "npx tsc -p tsconfig.build.json",
+    "build": "npx tsc -p tsconfig.build.json && mkdir -p build/console/stubs && cp -r src/console/stubs/ build/console/stubs/",
     "prepublishOnly": "npm run build",
     "test": "npx c8 npx jest"
   },

@@ -1,4 +1,4 @@
-const _SessionStore = require('../sessionStore');
+const _SessionStore = require('../src/sessionStore');
 const SessionStore = _SessionStore.default || _SessionStore;
 
 describe('SessionStore', () => {

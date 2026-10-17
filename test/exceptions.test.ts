@@ -1,6 +1,6 @@
-const _InvalidCookieClassException = require('../invalidCookieClassException');
+const _InvalidCookieClassException = require('../src/invalidCookieClassException');
 const InvalidCookieClassException = _InvalidCookieClassException.default || _InvalidCookieClassException;
-const _SessionStoreException = require('../sessionStoreException');
+const _SessionStoreException = require('../src/sessionStoreException');
 const SessionStoreException = _SessionStoreException.default || _SessionStoreException;
 
 describe('Session Exceptions', () => {
