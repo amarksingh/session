@@ -1,11 +1,13 @@
 import Jar from '@ostro/cookie/jar';
 import Session from './session';
-import uidSafe from 'uid-safe';
-import csrf from 'csrf';
+import * as uidSafeModule from 'uid-safe';
+const uidSafe: any = (uidSafeModule as any).default || uidSafeModule;
+import * as csrfModule from 'csrf';
+const csrfConstructor: any = (csrfModule as any).default || csrfModule;
 import Cookie from '@ostro/cookie/cookie';
 
 const uid = uidSafe.sync;
-const tokens = new csrf({
+const tokens = new csrfConstructor({
     saltLength: 30
 });
 
