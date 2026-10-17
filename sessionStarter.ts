@@ -81,7 +81,7 @@ class SessionStarter {
     /**
      * Clean up expired sessions from store if lottery hits.
      */
-    collectGarbage(): void {
+    public collectGarbage(): void {
         if (this.configHitsLottery()) {
             const period: number = parseInt(this[kConfig]['lifetime']) + 1;
             if (typeof this[kStore]['destroyExpireSession'] === 'function') {
@@ -95,7 +95,7 @@ class SessionStarter {
      *
      * @returns True if lottery succeeds.
      */
-    configHitsLottery(): boolean {
+    public configHitsLottery(): boolean {
         return (random(1, this[kConfig]['lottery'][1]) <= this[kConfig]['lottery'][0]);
     }
 }

@@ -93,7 +93,7 @@ class CookieSession {
      *
      * @returns Default session structure object.
      */
-    structureobject(): { __token: string; __flash: { __old: string[]; __new: string[] } } {
+    public structureobject(): { __token: string; __flash: { __old: string[]; __new: string[] } } {
         return {
             __token: tokens.create(this[kConfig]['key']),
             __flash: {

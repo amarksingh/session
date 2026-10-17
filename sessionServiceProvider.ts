@@ -8,21 +8,21 @@ class SessionServiceProvider extends ServiceProvider {
     /**
      * Register session services in container.
      */
-    register(): void {
+    public register(): void {
         this.registerSessionManager();
     }
 
     /**
      * Boot session services.
      */
-    boot(): void {
+    public boot(): void {
         this.registerSessionDriver();
     }
 
     /**
      * Register SessionManager singleton.
      */
-    registerSessionManager(): void {
+    public registerSessionManager(): void {
         this.$app.singleton('session', function (app: any) {
             return new SessionManager(app);
         });
@@ -31,7 +31,7 @@ class SessionServiceProvider extends ServiceProvider {
     /**
      * Register default session driver singleton.
      */
-    registerSessionDriver(): void {
+    public registerSessionDriver(): void {
         this.$app.singleton('session.store', function (app: any) {
             return app.session.driver();
         });

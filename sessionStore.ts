@@ -51,7 +51,7 @@ class SessionStore {
      *
      * @param maxAge - Maximum session age in minutes.
      */
-    destroyExpireSession(maxAge: number): void {
+    public destroyExpireSession(maxAge: number): void {
         this[kStore].destroyExpireSession(maxAge);
     }
 }

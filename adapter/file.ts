@@ -61,7 +61,7 @@ class File {
      *
      * @param maxAge - Maximum session age in minutes.
      */
-    destroyExpireSession(maxAge: number): void {
+    public destroyExpireSession(maxAge: number): void {
         const self = this;
         fs.readdir(this[kPath], (err: any, files: string[]) => {
             if (err || files.length === 0) {

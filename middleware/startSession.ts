@@ -5,7 +5,7 @@ import SessionManager from '../sessionManager';
  */
 class startSession {
     declare $app: any;
-    $session: any;
+    public $session: any;
     $registered?: boolean;
     startSession?: any;
 

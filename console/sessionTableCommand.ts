@@ -4,15 +4,15 @@ import Command from '@ostro/console/command';
  * Class SessionTableCommand.
  */
 class SessionTableCommand extends Command {
-    get $signature(): string {
+    public get $signature(): string {
         return 'session:table';
     }
-    get $description(): string {
+    public get $description(): string {
         return 'Create a migration for the session database table';
     }
-    $files: any;
+    public $files: any;
     declare $app: any;
-    info: any;
+    public info: any;
 
     /**
      * Create a new SessionTableCommand instance.
@@ -27,7 +27,7 @@ class SessionTableCommand extends Command {
     /**
      * Handle command execution.
      */
-    async handle(): Promise<void> {
+    public async handle(): Promise<void> {
         const $fullPath: string = await this.createBaseMigration();
         await this.$files.put($fullPath, await this.$files.get(__dirname + '/stubs/database.stub'));
 
@@ -39,7 +39,7 @@ class SessionTableCommand extends Command {
      *
      * @returns Created migration path.
      */
-    createBaseMigration(): any {
+    public createBaseMigration(): any {
         const $name: string = 'create_sessions_table';
         const $path: string = this.$app.databasePath('migrations');
 

@@ -52,7 +52,7 @@ class Memory {
      *
      * @param maxAge - Maximum session age in minutes.
      */
-    destroyExpireSession(maxAge: number): void {
+    public destroyExpireSession(maxAge: number): void {
         Object.keys(storage).forEach(sid => {
             if (storage[sid].updated_at < (Date.now() - (maxAge * 60000))) {
                 delete storage[sid];

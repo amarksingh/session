@@ -2,9 +2,9 @@
  * Class InvalidCookieClassException.
  */
 class InvalidCookieClassException {
-    name: string;
-    message: string;
-    statusCode: number;
+    public name: string;
+    public message: string;
+    public statusCode: number;
     stack?: string;
 
     /**

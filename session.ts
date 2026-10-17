@@ -15,8 +15,8 @@ class Session extends SessionInterface implements ISession {
     [kHandler]: any;
     [kAttributes]: Record<string, any>;
     [kResponse]: any;
-    existed: boolean = false;
-    touched: boolean = false;
+    public existed: boolean = false;
+    public touched: boolean = false;
 
     /**
      * Create a new session instance.
@@ -56,7 +56,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @returns Current session ID.
      */
-    getId(): string {
+    public getId(): string {
         return this[kSessionId];
     }
 
@@ -65,7 +65,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @returns Always returns true.
      */
-    flush(): boolean {
+    public flush(): boolean {
         this.touched = true;
         this[kAttributes] = this[kHandler].structureobject();
         return true;
@@ -76,7 +76,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param callback - Completion callback.
      */
-    save(callback: Function): void {
+    public save(callback: Function): void {
         this.get('__flash.__old', []).forEach((old: string) => {
             this.forget(old);
         });
@@ -95,7 +95,7 @@ class Session extends SessionInterface implements ISession {
      * @param defaultValue - Fallback value if not set.
      * @returns Pulled value or fallback.
      */
-    pull<T = unknown>(key: string, defaultValue?: T | null): T | null {
+    public pull<T = unknown>(key: string, defaultValue?: T | null): T | null {
         if (this[kAttributes][key]) {
             defaultValue = this[kAttributes][key];
             delete this[kAttributes][key];
@@ -107,7 +107,7 @@ class Session extends SessionInterface implements ISession {
     /**
      * Regenerate the CSRF token.
      */
-    regenerateToken(): void {
+    public regenerateToken(): void {
         this.put('__token', undefined);
     }
 
@@ -116,7 +116,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param $key - Attribute key.
      */
-    remove($key: string): void {
+    public remove($key: string): void {
         this.pull($key);
     }
 
@@ -127,7 +127,7 @@ class Session extends SessionInterface implements ISession {
      * @param key - Attribute key.
      * @param value - Value to push.
      */
-    push<T = unknown>(key: string, value: T): void {
+    public push<T = unknown>(key: string, value: T): void {
         const array: any = this.get(key, []);
         if (isArray(array)) {
             array.push(value);
@@ -142,7 +142,7 @@ class Session extends SessionInterface implements ISession {
      * @param value - Value to merge.
      * @param defaultValue - Default fallback container.
      */
-    merge(key: string, value: any, defaultValue: Record<string, any> = {}): void {
+    public merge(key: string, value: any, defaultValue: Record<string, any> = {}): void {
         const data: any = this.get(key, defaultValue);
         if (isArray(data)) {
             this.put(key, data.concat(value));
@@ -157,7 +157,7 @@ class Session extends SessionInterface implements ISession {
      * @param destroy - Whether to destroy old session data.
      * @param cb - Optional callback.
      */
-    regenerate(destroy: boolean, cb?: Function): void {
+    public regenerate(destroy: boolean, cb?: Function): void {
         if (destroy) {
             this[kHandler].destroy(this[kSessionId], cb);
         }
@@ -171,7 +171,7 @@ class Session extends SessionInterface implements ISession {
      * @param key - Attribute key.
      * @returns True if attribute exists.
      */
-    has(key: string): boolean {
+    public has(key: string): boolean {
         return get(this[kAttributes], key) != undefined;
     }
 
@@ -180,7 +180,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param key - Attribute key.
      */
-    forget(key: string): void {
+    public forget(key: string): void {
         this.touched = true;
         delete this[kAttributes][key];
     }
@@ -202,7 +202,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @returns Dictionary of all attributes.
      */
-    all(): Record<string, any> {
+    public all(): Record<string, any> {
         return omit(this[kAttributes], ['_token', 'flash']);
     }
 
@@ -213,7 +213,7 @@ class Session extends SessionInterface implements ISession {
      * @param key - Attribute key or key-value map.
      * @param value - Value to store when key is a string.
      */
-    put<T = unknown>(key: string | Record<string, any>, value?: T): void {
+    public put<T = unknown>(key: string | Record<string, any>, value?: T): void {
         if (!isObject(key)) {
             key = {
                 [key as string]: value
@@ -235,7 +235,7 @@ class Session extends SessionInterface implements ISession {
      * @param key - Attribute key or key-value map.
      * @param value - Value to store when key is a string.
      */
-    flash<T = unknown>(key: string | Record<string, any>, value?: T): void {
+    public flash<T = unknown>(key: string | Record<string, any>, value?: T): void {
         if (!isObject(key)) {
             key = {
                 [key as string]: value
@@ -251,7 +251,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param keys - Keys to retain.
      */
-    flashOnly(keys: any): void {
+    public flashOnly(keys: any): void {
         keys = Array.isArray(keys) ? keys : arguments;
         const onlyKeys = intersection(this.get('__flash.__new', []) as string[], keys);
         const exceptKeys = difference(this.get('__flash.__new', []) as string[], keys);
@@ -267,7 +267,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param keys - Keys to exclude from flash.
      */
-    flashExcept(keys: any): void {
+    public flashExcept(keys: any): void {
         keys = Array.isArray(keys) ? keys : arguments;
         const exceptKeys = intersection(this.get('__flash.__new', []) as string[], keys);
         const onlyKeys = difference(this.get('__flash.__new', []) as string[], keys);
@@ -281,7 +281,7 @@ class Session extends SessionInterface implements ISession {
     /**
      * Reflash all current flash data for another request.
      */
-    reflash(): void {
+    public reflash(): void {
         this.put('__flash.__new', uniq((this.get('__flash.__new', []) as string[]).concat(this.get('__flash.__old', []) as string[])));
         this.put('__flash.__old', []);
     }
@@ -291,7 +291,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @param keys - Keys to keep.
      */
-    keep(keys: any): void {
+    public keep(keys: any): void {
         keys = isArray(keys) ? keys : Array.prototype.slice.call(arguments);
         this.put('__flash.__new', uniq((this.get('__flash.__new', []) as string[]).concat(keys)));
         this.put('__flash.__old', difference(this.get('__flash.__old', []) as string[], keys));
@@ -302,7 +302,7 @@ class Session extends SessionInterface implements ISession {
      *
      * @returns CSRF token string or null.
      */
-    token(): string | null {
+    public token(): string | null {
         return this.get('__token');
     }
 }

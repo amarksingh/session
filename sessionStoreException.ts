@@ -2,10 +2,10 @@
  * Class SessionStoreException.
  */
 class SessionStoreException {
-    name: string;
-    message: string;
-    errors: unknown;
-    statusCode: number;
+    public name: string;
+    public message: string;
+    public errors: unknown;
+    public statusCode: number;
     stack?: string;
 
     /**
